@@ -1,0 +1,415 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"with",
+				"withErrors"
+			],
+			[
+				"Redirect",
+				"Redirect-route	Redirect-route"
+			],
+			[
+				"vali",
+				"validation"
+			],
+			[
+				"Form",
+				"Form-selectYear	Form-selectYear"
+			],
+			[
+				"HTML",
+				"HTML-link	HTML-link"
+			],
+			[
+				"URL",
+				"URL-route	URL-route"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 47.0,
+		"selected_items":
+		[
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"set syntax apa",
+				"Set Syntax: Apache Conf"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 575.0
+	},
+	"console":
+	{
+		"height": 126.0,
+		"history":
+		[
+			"import urllib.request,os; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); open(os.path.join(ipp, pf), 'wb').write(urllib.request.urlopen( 'http://sublime.wbond.net/' + pf.replace(' ','%20')).read())"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/usr/local/etc/nginx/nginx.conf",
+		"/Users/danielftapiar/Sites/clinica/app/views/ofiles/create.blade.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/segmentals/create.blade.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/patients/create.blade.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/histories/create.blade.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/generals/create.blade.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/cfiles/create.blade.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/predis/predis/bin/create-phar.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/swiftmailer/swiftmailer/create_pear_package.php",
+		"/Users/danielftapiar/Sites/clinica/composer.json",
+		"/Users/danielftapiar/Sites/clinica/app/controllers/OfilesController.php",
+		"/Users/danielftapiar/Sites/clinica/app/database/migrations/2013_11_30_212211_create_patients_table.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/layouts/master.blade.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/patients/index.blade.php",
+		"/Users/danielftapiar/Sites/clinica/app/models/Patient.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/nikic/php-parser/lib/PHPParser/Node/Scalar/FileConst.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/FileCacheReader.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/doctrine/annotations/tests/Doctrine/Tests/Common/Annotations/FileCacheReaderTest.php",
+		"/Users/danielftapiar/Sites/clinica/app/controllers/PatientsController.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/mustache/mustache/bin/create_example.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/swiftmailer/swiftmailer/test-suite/lib/simpletest/extensions/colortext_reporter.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/symfony/event-dispatcher/Symfony/Component/EventDispatcher/Debug/TraceableEventDispatcherInterface.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/symfony/event-dispatcher/Symfony/Component/EventDispatcher/EventDispatcherInterface.php",
+		"/Users/danielftapiar/Sites/clinica/app/models/Ofile.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/symfony/console/Symfony/Component/Console/Formatter/OutputFormatter.php",
+		"/Users/danielftapiar/Sites/clinica/app/config/database.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/swiftmailer/swiftmailer/test-suite/lib/simpletest/test/page_test.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/symfony/http-foundation/Symfony/Component/HttpFoundation/Session/Storage/MockArraySessionStorage.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Database/Eloquent/MassAssignmentException.php",
+		"/Users/danielftapiar/Sites/clinica/ModeloConceptualClinica.graffle",
+		"/Users/danielftapiar/Sites/clinica/vendor/nesbot/carbon/tests/StartEndOfTest.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/predis/predis/lib/Predis/ServerException.php",
+		"/Users/danielftapiar/Sites/clinica/server.php",
+		"/Users/danielftapiar/Sites/clinica/app/views/patients/edit.blade.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/darsain/laravel-console/src/views/partials/templates.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/way/generators/tests/commands/ViewGeneratorCommandTest.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/way/generators/src/Way/Generators/Generators/templates/view.txt",
+		"/Users/danielftapiar/Sites/clinica/vendor/way/generators/src/Way/Generators/Generators/ViewGenerator.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/View/ViewServiceProvider.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/View/ViewFinderInterface.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Support/Facades/View.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Foundation/ViewPublisher.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/doctrine/dbal/lib/Doctrine/DBAL/Schema/View.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/View/View.php",
+		"/Users/danielftapiar/Sites/clinica/app/config/view.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/symfony/finder/Symfony/Component/Finder/Expression/ValueInterface.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Support/helpers.php",
+		"/Users/danielftapiar/Documents/DNS Monitor",
+		"/Users/danielftapiar/Sites/clinica/app/routes.php",
+		"/Users/danielftapiar/Sites/clinica/bootstrap/paths.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/symfony/finder/Symfony/Component/Finder/Adapter/PhpAdapter.php",
+		"/Users/danielftapiar/Sites/clinica/phpunit.xml",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Support/ClassLoader.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Support/NamespacedItemResolver.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Support/Pluralizer.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Session/CacheBasedSessionHandler.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Auth/AuthManager.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/laravel/framework/src/Illuminate/Queue/IlluminateQueueClosure.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/mustache/mustache/src/Mustache/Loader/InlineLoader.php",
+		"/Users/danielftapiar/Sites/clinica/public/index.php",
+		"/Users/danielftapiar/Sites/clinica/vendor/predis/predis/lib/Predis/ResponseObjectInterface.php",
+		"/Users/danielftapiar/Sites/clinica/readme.md",
+		"/Users/danielftapiar/.bash_profile",
+		"/Users/danielftapiar/test.sh",
+		"/Users/danielftapiar/Downloads/r.forestfrag",
+		"/Users/danielftapiar/Downloads/spat3.c",
+		"/Users/danielftapiar/build/mod_fastcgi-2.4.6/Makefile",
+		"/private/etc/php-fpm.conf",
+		"/Users/danielftapiar/.profile",
+		"/Users/danielftapiar/Library/Application Support/Sublime Text 3/Packages/SideBarEnhancements/CHANGELOG"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 93.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"rut",
+			"$patient->",
+			"$patient",
+			"users",
+			"rut",
+			"selected",
+			"alta",
+			"activo",
+			"active",
+			"100",
+			"Enviado Por",
+			"sent",
+			"rut",
+			"Rut",
+			"rut",
+			"->",
+			"patient",
+			"patients",
+			"title",
+			"home",
+			"parameters",
+			"segundoapellido",
+			"primerapellido",
+			"segundonombre",
+			"primernombre",
+			"<?",
+			"dd",
+			"GRASS 7 on Debian Squeeze",
+			"165",
+			"115",
+			"#%flag",
+			"#%flag\n#%  key: t\n#%  description: keep temporary maps\n#% answer : 0\n#%END",
+			"pff",
+			"g.tempfile",
+			"GIS_OPT_WINDOW",
+			"jump",
+			"condition",
+			":",
+			"/usr/bin:\n",
+			"bin:",
+			"usr/sbin",
+			"daemon",
+			"/usr/local/bin",
+			"'\n",
+			"ls",
+			"í",
+			"é",
+			"e",
+			"á",
+			"í",
+			"ó",
+			"ú",
+			"u",
+			"”",
+			"“",
+			"\"",
+			"ú",
+			"ó",
+			"í",
+			"é",
+			"á",
+			"ó",
+			"í",
+			"ó",
+			"ú",
+			"í",
+			"é",
+			"á",
+			"ó",
+			"é"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"\\'{i}",
+			"\\'{e}",
+			"\\'{a}",
+			"\\'{i}",
+			"\\'{o}",
+			"\\'{u}",
+			"\\'{o}",
+			"\\'{i}",
+			"\\'{e}",
+			"\\'{a}",
+			"\\'{o}",
+			"\\'{i}",
+			"\\'{o}",
+			"\\'{u}",
+			"\\'{i}",
+			"\\'{e}",
+			"\\'{a}",
+			"\\'{o}",
+			"\\'{e}"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"project": "index.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+			[
+				"create",
+				"app/views/patients/create.blade.php"
+			],
+			[
+				"patient",
+				"app/models/Patient.php"
+			],
+			[
+				"routes",
+				"app/routes.php"
+			],
+			[
+				"create.blade",
+				"app/views/patients/create.blade.php"
+			],
+			[
+				"patientcon",
+				"app/controllers/PatientsController.php"
+			],
+			[
+				"ofilecontro",
+				"app/controllers/OfilesController.php"
+			],
+			[
+				"ofilecon",
+				"vendor/nikic/php-parser/lib/PHPParser/Node/Scalar/FileConst.php"
+			],
+			[
+				"patientc",
+				"app/controllers/PatientsController.php"
+			],
+			[
+				"patientscreate",
+				"app/views/patients/create.blade.php"
+			],
+			[
+				"master",
+				"app/views/layouts/master.blade.php"
+			],
+			[
+				"ofilescreate",
+				"app/views/ofiles/create.blade.php"
+			],
+			[
+				"ofiles",
+				"app/controllers/OfilesController.php"
+			],
+			[
+				"patientindex",
+				"app/views/patients/index.blade.php"
+			],
+			[
+				"rout",
+				"app/routes.php"
+			],
+			[
+				"viewpatient",
+				"app/views/patients/index.blade.php"
+			],
+			[
+				"illuminate/support/helper",
+				"vendor/laravel/framework/src/Illuminate/Support/helpers.php"
+			]
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 232.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
