@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateClientTable extends Migration {
+class CreateServerUrlTable extends Migration {
 
 	/**
 	 * Run the migrations.
@@ -12,16 +12,16 @@ class CreateClientTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('clients', function(Blueprint $table)
+		Schema::create('server_url', function(Blueprint $table)
 		{
 			$table->engine = 'InnoDB';
 			$table->increments('id');
-			$table->string('name');
-			$table->string('hostname');
+			$table->unsignedInteger('server_id');
+			$table->unsignedInteger('url_id');
+			$table->foreign('server_id')->references('id')->on('servers');
+			$table->foreign('url_id')->references('id')->on('urls');
 			$table->timestamps();
 		});
-
-		
 	}
 
 	/**
@@ -31,9 +31,7 @@ class CreateClientTable extends Migration {
 	 */
 	public function down()
 	{
-		
-		Schema::dropIfExists('clients');
-		
+		Schema::drop('server_url');
 	}
 
 }

@@ -16,11 +16,10 @@ Route::get('/', function()
 	$client = Client::find(1);
 	$urls = $client->urls()->get();
 	foreach ($urls as $url) {
-
-		$exists = urlExists($url->link);
-		dd($exists);
-
-		dd($data);
+        dd($url);
+		foreach ($url->servers->get() as $server) {
+            # code...
+        }
 	}
 	
 	dd($data);
