@@ -1,5 +1,5 @@
 @extends('layouts.master')
 
 @section('content')
-asdf
+HelloWorld!! WELCOME TO DNS MONITOR AAHHA!
 @stop
