@@ -22,12 +22,7 @@ Route::get('/', function()
     
 	$clients = Client::all();
     $servers = Server::all();
-	/*$urls = $client->urls()->get();
-	foreach ($urls as $url) {
-		foreach ($url->servers()->get() as $server) {
-            dd($server);
-        }
-	}*/
+	
 	
 
 	return View::make('home')->with(array('clients'=>$clients,'servers'=>$servers, 'urls'=>$urls));

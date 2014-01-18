@@ -5,33 +5,27 @@ class ServerUrlTableSeeder extends Seeder {
 	{
 		DB::table('server_url')->delete();
 		
-		Server::create(array(
-			'ip'=>'10.1.10.120',
-			'port'=>'80',
-			'created_at' => new DateTime,
-			'updated_at' => new DateTime
-		));
+		$clients = Client::all();
 
-		Server::create(array(
-			'ip'=>'10.1.10.121',
-			'port'=>'80',
-			'created_at' => new DateTime,
-			'updated_at' => new DateTime
-		));
+		foreach ($clients as $client) {
+			
+			$urls = $client->urls()->get();
 
-		Server::create(array(
-			'ip'=>'10.1.10.122',
-			'port'=>'80',
-			'created_at' => new DateTime,
-			'updated_at' => new DateTime
-		));
-		
-		Server::create(array(
-			'ip'=>'10.1.10.123',
-			'port'=>'443',
-			'created_at' => new DateTime,
-			'updated_at' => new DateTime
-		));
+			foreach ($urls as $url) {
+						$server_urls = 
+							array(
+								array('server_id'=>'2', 'url_id'=>$url->id ,'created_at' => new DateTime, 'updated_at' => new DateTime),
+								array('server_id'=>'3', 'url_id'=>$url->id ,'created_at' => new DateTime, 'updated_at' => new DateTime),
+								array('server_id'=>'4', 'url_id'=>$url->id ,'created_at' => new DateTime, 'updated_at' => new DateTime),
+								array('server_id'=>'5', 'url_id'=>$url->id ,'created_at' => new DateTime, 'updated_at' => new DateTime),
+								);
+							
+						
+						DB::table('server_url')->insert($server_urls);
+						
+					}
+		}
+
 		
 
 	}
