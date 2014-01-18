@@ -13,17 +13,24 @@
 
 Route::get('/', function()
 {
-	$client = Client::find(1);
-	$urls = $client->urls()->get();
+    
+    $local_ip = gethostbyname(trim(`hostname`));
+
+    $local_server = Server::where('ip','=',$local_ip)->first();
+    
+    $urls = $local_server->urls()->get();
+    
+	$clients = Client::all();
+    $servers = Server::all();
+	/*$urls = $client->urls()->get();
 	foreach ($urls as $url) {
-        dd($url);
-		foreach ($url->servers->get() as $server) {
-            # code...
+		foreach ($url->servers()->get() as $server) {
+            dd($server);
         }
-	}
+	}*/
 	
-	dd($data);
-	return View::make('home');
+
+	return View::make('home')->with(array('clients'=>$clients,'servers'=>$servers, 'urls'=>$urls));
 });
 
 Route::get('sync', function(){
