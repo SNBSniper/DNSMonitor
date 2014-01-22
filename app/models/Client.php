@@ -8,4 +8,9 @@ class Client extends Eloquent{
 	{
 		return $this->hasMany('Url');
 	}
+
+	public function ips()
+	{
+		return $this->hasMany('Ip');
+	}
 }

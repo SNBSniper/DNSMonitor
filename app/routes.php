@@ -28,9 +28,94 @@ Route::get('/', function()
 	return View::make('home')->with(array('clients'=>$clients,'servers'=>$servers, 'urls'=>$urls));
 });
 
-Route::get('sync', function(){
+Route::get('init', function(){
+    ini_set('max_execution_time', 300);
+    $local_ip = gethostbyname(trim(`hostname`));
+    $server = Server::where('ip','=',$local_ip)->first();
+    
+    $urls = $server->urls()->get();
+
+    foreach ($urls as $url) {
+        $exists = urlExists($url->link);
+        $url->link_status = $exists;
+        $url->save();
+    }
+
+    $dns_servers = Server::where('type','=','dns')->get();
+
+
+    $clients = Client::all();
+    foreach ($clients as $client) {
+        foreach ($dns_servers as $dns_server) {
+            $hostName = $client->hostname;
+            $result = `nslookup $hostName $dns_server->ip` ;
+            $result = trim($result);
+            $result = strtolower($result);
+            $final = explode('\n',$result);
+            preg_match('/address: (.*)/', $result, $matches);
+            
+            if ( array_key_exists(1, $matches) )
+            {
+                $input =  array( 'ip' => $matches[1], 'server_id'=>$dns_server->id,  );
+                    
+                $validation = Ip::validate($input);
+                
+                if ($validation->passes()) {
+
+                    $ip = new Ip ($input);
+                    $ip->status=1;
+                    
+                    $client->ips()->save($ip);
+                }
+                else
+                    echo $matches[1].' already exists <br> ' ;
+                
+            }
+            else
+            {
+                $input =  array( 'ip' => null, 'server_id'=>$dns_server->id,'status'=>0 );
+                $ip = new Ip ($input);
+
+                $client->ips()->save($ip);
+
+
+            }
+
+        }
+
+
+        
+
+/* 
+
+
+
+
+
+
+
+
+        $hostname = $client->hostname;
+
+        $result = `nslookup $hostname`;
+        $result = strtolower($result);
+        $final = explode(' ',$result);
+        if (!is_null(final[2])) {
+            $ip_address = trim($final[2]);
+            $ip = new Ip ( array( 'ip' => $ip ) );
+            $client->ips()->save($ip);
+        }*/
+        
+        
+    }
 
 });
+
+Route::get('monitor', function(){
+    
+});
+
+
 
 function urlExists($url=NULL)  
 {  
@@ -48,4 +133,5 @@ function urlExists($url=NULL)
         return false;  
     }  
 }
+
 

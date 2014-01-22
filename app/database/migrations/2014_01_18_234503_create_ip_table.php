@@ -3,8 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUrlTable extends Migration {
-
+class CreateIpTable extends Migration {
 	/**
 	 * Run the migrations.
 	 *
@@ -12,16 +11,22 @@ class CreateUrlTable extends Migration {
 	 */
 	public function up()
 	{
-		Schema::create('urls', function(Blueprint $table)
+		Schema::create('ips', function(Blueprint $table)
 		{
 			$table->engine = 'InnoDB';
 			$table->increments('id');
-			$table->string('link');
-			$table->boolean('link_status')->nullable();
+			$table->string('ip',15)->nullable();
+			$table->boolean('status');
 			$table->unsignedInteger('client_id');
 			$table->foreign('client_id')->references('id')->on('clients');
+
+			$table->unsignedInteger('server_id');
+			$table->foreign('server_id')->references('id')->on('servers');
+			
 			$table->timestamps();
+
 		});
+
 	}
 
 	/**
@@ -31,7 +36,7 @@ class CreateUrlTable extends Migration {
 	 */
 	public function down()
 	{
-		Schema::dropIfExists('urls');
+		Schema::drop('ips');
 	}
 
 }

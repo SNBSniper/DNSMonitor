@@ -14,7 +14,14 @@ class ClientTableSeeder extends Seeder {
 
 		Client::create(array(
 			'name'=>'Servipag',
-			'hostname'=>'wwww.servipagl.cl',
+			'hostname'=>'www.servipag.cl',
+			'created_at' => new DateTime,
+			'updated_at' => new DateTime
+		));
+
+		Client::create(array(
+			'name'=>'Facebook',
+			'hostname'=>'www.facebook.com',
 			'created_at' => new DateTime,
 			'updated_at' => new DateTime
 		));

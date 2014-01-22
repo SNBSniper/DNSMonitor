@@ -11,6 +11,19 @@
 |
 */
 
+Validator::extend('foo', function($attribute, $value, $parameters)
+{
+	$row = Ip::where('ip','=',$value)
+			->where('server_id','=',$parameters[0])
+			->first();
+		
+	if (is_null($row))
+		return true;
+	else
+		return false;
+    
+});
+
 ClassLoader::addDirectories(array(
 
 	app_path().'/commands',
