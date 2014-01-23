@@ -14,16 +14,16 @@
 Route::get('/', function()
 {
     
-    $local_ip = gethostbyname(trim(`hostname`));
+ //    $local_ip = gethostbyname(trim(`hostname`));
 
-    $local_server = Server::where('ip','=',$local_ip)->first();
+ //    $local_server = Server::where('ip','=',$local_ip)->first();
     
-    $urls = $local_server->urls()->get();
+ //    $urls = $local_server->urls()->get();
     
-	$clients = Client::all();
-    $servers = Server::all();
+	// $clients = Client::all();
+ //    $servers = Server::all();
 	
-	
+	return "HI";
 
 	return View::make('home')->with(array('clients'=>$clients,'servers'=>$servers, 'urls'=>$urls));
 });
@@ -83,31 +83,10 @@ Route::get('init', function(){
 
         }
 
-
-        
-
-/* 
-
-
-
-
-
-
-
-
-        $hostname = $client->hostname;
-
-        $result = `nslookup $hostname`;
-        $result = strtolower($result);
-        $final = explode(' ',$result);
-        if (!is_null(final[2])) {
-            $ip_address = trim($final[2]);
-            $ip = new Ip ( array( 'ip' => $ip ) );
-            $client->ips()->save($ip);
-        }*/
-        
         
     }
+
+    
 
 });
 
