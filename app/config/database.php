@@ -54,10 +54,10 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost',
+			'host'      => '10.1.10.144',
 			'database'  => 'dnsmonitor',
-			'username'  => 'root',
-			'password'  => '',
+			'username'  => 'Daniels-MBP',
+			'password'  => 'Spartan29',
 			'charset'   => 'utf8',
 			'collation' => 'utf8_unicode_ci',
 			'prefix'    => '',
@@ -68,7 +68,7 @@ return array(
 			'host'     => 'localhost',
 			'database' => 'database',
 			'username' => 'root',
-			'password' => '',
+			'password' => 'Spartan29',
 			'charset'  => 'utf8',
 			'prefix'   => '',
 			'schema'   => 'public',
