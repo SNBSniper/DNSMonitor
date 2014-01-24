@@ -7,7 +7,7 @@ class ServerTableSeeder extends Seeder {
 		
 		Server::create(array(
 			'provider'=>'localhost',
-			'ip'=>'10.1.10.145',
+			'ip'=>'10.1.10.144',
 			'type'=>'master',
 			'port'=>'80',
 			'created_at' => new DateTime,
@@ -16,34 +16,16 @@ class ServerTableSeeder extends Seeder {
 
 		Server::create(array(
 			'provider'=>'localhost',
-			'ip'=>'10.1.10.120',
-			'type'=>'slave',
-			'port'=>'80',
-			'created_at' => new DateTime,
-			'updated_at' => new DateTime
-		));
-
-		Server::create(array(
-			'provider'=>'localhost',
-			'ip'=>'10.1.10.121',
-			'type'=>'slave',
-			'port'=>'80',
-			'created_at' => new DateTime,
-			'updated_at' => new DateTime
-		));
-
-		Server::create(array(
-			'provider'=>'localhost',
-			'ip'=>'10.1.10.121',
-			'type'=>'slave',
-			'port'=>'80',
-			'created_at' => new DateTime,
-			'updated_at' => new DateTime
-		));
-
-		Server::create(array(
-			'provider'=>'localhost',
 			'ip'=>'10.1.10.149',
+			'type'=>'slave',
+			'port'=>'80',
+			'created_at' => new DateTime,
+			'updated_at' => new DateTime
+		));
+
+		Server::create(array(
+			'provider'=>'localhost',
+			'ip'=>'10.1.10.145',
 			'type'=>'slave',
 			'port'=>'80',
 			'created_at' => new DateTime,
