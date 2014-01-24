@@ -85,7 +85,7 @@ Route::get('init', function(){
 
         
     }
-
+    return "Initilization Complete";
     
 
 });
