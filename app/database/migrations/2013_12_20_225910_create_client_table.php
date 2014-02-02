@@ -18,6 +18,15 @@ class CreateClientTable extends Migration {
 			$table->increments('id');
 			$table->string('name');
 			$table->string('hostname');
+			$table->integer('id_biller')->nullable();
+			$table->integer('id_servicio')->nullable();
+			$table->integer('version')->nullable();
+			$table->integer('pil')->nullable();
+			$table->integer('cod_tecnico')->nullable();
+			$table->string('service_name')->nullable();
+			$table->string('razon_social')->nullable();
+			$table->string('categoria')->nullable();
+
 			$table->timestamps();
 		});
 

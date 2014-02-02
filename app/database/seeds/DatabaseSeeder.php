@@ -20,6 +20,8 @@ class DatabaseSeeder extends Seeder {
 		$this->call('ServerTableSeeder');
 
 		$this->call('ServerUrlTableSeeder');
+		
+		$this->call('ClientServerTableSeeder');
 
 	}
 

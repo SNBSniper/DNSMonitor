@@ -11,10 +11,16 @@ class Ip extends Eloquent{
 
 	public static function validate($input)
 	{
-		$rules = array('ip'=>'required|ip|foo:'.$input['server_id']);
+
+		$messages = array(
+		    'foo' => 'the clinter_server row already exists',
+		);
+		//|foo:'.$input['server_id'].','.$input['client_id']
+		$rules = array('ip'=>'required|ip');
+		
 		//$rules['publisher'] .= ',' . $publisher_id;
-		$v = Validator::make($input, $rules);
-	
+		$v = Validator::make($input, $rules,$messages);
+		
 		
 
 		

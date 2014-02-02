@@ -13,11 +13,13 @@
 
 Validator::extend('foo', function($attribute, $value, $parameters)
 {
-	$row = Ip::where('ip','=',$value)
-			->where('server_id','=',$parameters[0])
-			->first();
+
+	
+
+	$row = DB::table('client_server')->where('server_id','=',$parameters[0])->where('client_id','=',$parameters[1])->first();
+			
 		
-	if (is_null($row))
+	if (!is_null($row))
 		return true;
 	else
 		return false;

@@ -13,4 +13,9 @@ class Client extends Eloquent{
 	{
 		return $this->hasMany('Ip');
 	}
+
+	public function servers()
+	{
+		return $this->belongsToMany('Server');
+	}
 }

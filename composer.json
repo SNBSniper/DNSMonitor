@@ -7,6 +7,8 @@
 		"laravel/framework": "4.1.*",
 		"way/generators": "dev-master",
 		"darsain/laravel-console": "dev-master",
+		"components/jquery": "1.9.*"
+
 		
 
 

@@ -5,33 +5,38 @@
 <style type="text/css">
 	
 </style>
-HelloWorld!! WELCOME TO DNS MONITOR AAHHA! <br>
-@foreach ($clients as $client) 
-	
-	
-	{{$client->name}} , {{$client->hostname}}<br>
+<h1>This is a {{$server->type}} server </h1>
+<h2>IP: {{$server->ip}}:{{$server->port}} </h2>
+<h3>Clients Monitored by this server ({{count($clients)}})</h3>
 
-	<ul>
-	@foreach ($client->urls()->get() as $url)
-		<li>{{$url->link}}</li>	
+@if (isset($clients))
+	@foreach ($clients as $client) 
+		
+		
+		<b>{{$client->name}}</b><br>
+		
+		
 	@endforeach
+
+@else
+
+@endif
+
+
+<h4> IP/Hostnames being monitored by this server</h4>
+@foreach ($ips as $client) 
+	
+	
+	{{$client->name}} , {{$client->ip}}<br>
+	
+	<ul>
+	
 	</ul>
 @endforeach
 
-<ul>
-	@foreach ($servers as $server)
-
-	<li>{{$server->ip}}:{{$server->port}}={{$server->type}}</li>
-@endforeach	
-</ul>
-
-<h1>Urls that this server is monitoring</h1>
 
 
-<ul>
-	@foreach ($urls as $url)
-		<li>{{$url->link}}</li> 
-	@endforeach	
-</ul>
+
+
 
 @stop

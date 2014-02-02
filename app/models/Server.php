@@ -8,4 +8,11 @@ class Server extends Eloquent{
 	{
 		return $this->belongsToMany('Url');
 	}	
+
+	public function clients()
+	{
+		return $this->belongsToMany('Client');
+	}
+
+	
 }

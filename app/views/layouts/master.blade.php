@@ -17,7 +17,6 @@
   </head>
   <body>
   	@yield('content')
-    <h1>Hello, world!</h1>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
