@@ -16,6 +16,8 @@
     <![endif]-->
   </head>
   <body>
+
+  HOLAAA
   	@yield('content')
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

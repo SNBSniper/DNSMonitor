@@ -4,9 +4,9 @@ class Notification extends Eloquent{
 
     protected $guarded = array();
 
-	public function client_server()
+	public function notification_server()
 	{
-		return $this->belongsToMany('Client_server');
+		return $this->belongsToMany('Server');
 	}
 
 	public function client()

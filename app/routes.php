@@ -11,16 +11,20 @@
 |
 */
 
+
+Route::get('servers',function(){
+    return View::make('servers');
+});
 Route::get('/', function()
 {
     
     $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
-    $local_ip = '10.1.10.149';
-    $local_server = Server::where('ip','=',$local_ip)->first();
+    $local_ip = '10.1.10.149'; //developinggg
+    $slave_server = Server::where('ip','=',$local_ip)->first();
     
 
     
-    if( $local_server->type == 'master' )
+    if( $slave_server->type == 'master' )
     {
         
         $clients = Client::all();
@@ -31,13 +35,13 @@ Route::get('/', function()
     
     else
     {
-        $clients_monitored = get_server_clients($local_server);
+        $clients_monitored = get_server_clients($slave_server);
 
         
         // select ip, client_id from ips where ip IS NOT NULL group by ip;
         $ips = DB::table('ips')->select('ip','name')->whereNotNull('ip')->join('clients','clients.id','=','ips.client_id')->groupBy('ip')->orderBy('name','asc')->get();
 
-        return View::make('home')->with(array('ips'=>$ips, 'server'=>$local_server, 'clients'=>$clients_monitored));
+        return View::make('home')->with(array('ips'=>$ips, 'server'=>$slave_server, 'clients'=>$clients_monitored));
         
     }
 	
@@ -53,9 +57,9 @@ Route::get('init', function(){
     $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
     $local_ip = '10.1.10.149';
 
-    $local_server = Server::where('ip','=',$local_ip)->first();
+    $slave_server = Server::where('ip','=',$local_ip)->first();
     
-    /*$urls = $local_server->urls()->get();
+    /*$urls = $slave_server->urls()->get();
 
     foreach ($urls as $url) {
         $exists = urlExists($url->link);
@@ -66,7 +70,7 @@ Route::get('init', function(){
     $dns_servers = Server::where('type','=','dns')->get();
 
     
-    $clients_monitored = get_server_clients($local_server);
+    $clients_monitored = get_server_clients($slave_server);
 
     if (!is_null($clients_monitored)) {
 
@@ -141,19 +145,36 @@ Route::get('init', function(){
 });
 
 Route::get('get_clients',function(){
-    dd(Input::all());
+    $server_id = Input::get('server_id');
+
+    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$server_id)->get();
+    
+    $result = array();
+
+    foreach ($clients_id as $key => $value) {
+        
+        // explode the sub-array, and add the parts
+        array_push($result, $value->client_id);
+        
+    }
+
+    
+    
+    return json_encode($result);
+
+
+    
 });
 
 Route::get('monitor', function(){
-    echo file_get_contents('10.1.10.149/notifications');
-    dd('stop');
+    
     ini_set('max_execution_time', 300);
     $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
     $local_ip = '10.1.10.149';
-    $local_server = Server::where('ip','=',$local_ip)->first();
+    $slave_server = Server::where('ip','=',$local_ip)->first();
 
 
-    $clients_monitored = get_server_clients($local_server);
+    $clients_monitored = get_server_clients($slave_server);
 
     $dns_servers = Server::where('type','=','dns')->get();
 
@@ -189,6 +210,7 @@ Route::get('monitor', function(){
                             $client->servers()->attach($dns_server->id, array('status'=>1,'created_at'=>$date, 'updated_at'=>$date));         
                             $client_server = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
 
+                            $date = new \DateTime;
                             $ip = new Ip(array('ip'=>$input['ip'], 'client_id'=>$client->id,'client_server_id'=>$client_server->id));
                             $ip->save();
 
@@ -211,60 +233,37 @@ Route::get('monitor', function(){
 
                         if (!$found) { //if not found must notify master server WAY UNDER DEVELOPMENT
 
-                            DB::transaction(function() use ($client_server, $input)
-                            {
-                                //$notification = Notification::where('client_id','=',$client_server->client_id)->first();
-                                $master_server = get_master_server();
-                                $ip = $master_server->ip;
-                                $ip = '10.1.10.149';
+                            $master_server = get_master_server();
 
-                                /*$date = new DateTime;
+                            //$query_url = $master_server->ip."/notifications"."?slave_server_id=".$slave_server->id."&ip=".$input['ip'];
+                            
+                            $query_url = "10.1.10.149"."/notifications"."?slave_server_id=".$slave_server->id."&ip=".$input['ip'];
+                            $lurl=get_fcontent($query_url);
+                            
+                            
+                            $json_output = json_decode($lurl[0]);
+                            
+                            if (!is_null($json_output)) {
+                                switch ($json_output->status) {
+                                    case 1:
+                                        echo ('successfuly notfied ip: '.$input['ip']."<br>");
+                                        break;
+                                    case 0: 
+                                        echo ('ip: '.$input['ip']." could not be notified <br>");
+                                        break;
+                                    case 2:
+                                        echo ('ip: '.$input['ip']."already notified by this server <br>");
+                                        break;
+                                    default:
+                                        echo $json_output->status;
+                                        dd('unknown error')    ;
+                                        break;
+                                }   
+                            }
+                            else
+                                echo $lurl[0];
+                            
 
-                                
-                                $from = new DateTime;
-                                
-                                $to = new DateTime;
-                                date_add($to, date_interval_create_from_date_string('30 min'));
-                                date_sub($from, date_interval_create_from_date_string('30 min'));
-
-
-                                $notification = Notification::whereBetween('created_at', array($from, $to))->where('client_id','=',$client_server->client_id)->first();   */
-                                $notification = Notification::where('new_ip', '=', $input['ip'])->first();
-                                
-                                if (is_null($notification)) {
-                                    
-
-                                    $date = new \DateTime;
-
-                                    $notification = new Notification(array(
-                                                    'new_ip'=>$input['ip'],
-                                                    'client_id'=>$client_server->client_id,
-                                                    'created_at' => new DateTime,
-                                                    'updated_at' => new DateTime
-                                                    
-                                                ));
-                                    $notification->save();
-                                    //$client->servers()->attach($dns_server->id, array('status'=>0));         
-                                    
-                                    $notification->client_server()->attach($client_server->id, array('created_at' => new DateTime,'updated_at' => new DateTime));
-
-                                    
-                                }
-                                else
-                                {
-                                    $row = DB::table('client_server_notification')->where('client_server_id','=',$client_server->id)->where('notification_id','=',$notification->id)->first();
-                                    
-
-                                    if (is_null($row)) {
-                                        $notification->client_server()->attach($client_server->id, array('created_at' => new DateTime,'updated_at' => new DateTime));    
-                                    }
-                                    
-
-                                }
-                                
-                                
-                            });
-                        
                             
 
                         }
@@ -280,9 +279,15 @@ Route::get('monitor', function(){
             }
             else
             {
+                
+
                 DB::transaction(function() use ($client,$dns_server,$input)
                 {
-                    $client->servers()->attach($dns_server->id, array('status'=>0));         
+
+                    $date = new \DateTime;
+
+                    $client->servers()->attach($dns_server->id, array('status'=>0,'created_at'=>$date, 'updated_at'=>$date));
+
                     
 
                 });
@@ -294,25 +299,136 @@ Route::get('monitor', function(){
 
         
     }
+    
+    return View::make('monitor');
 
 
 });
 
 Route::get('notifications',function(){
-    return Response::json(array('name' => 'Steve', 'state' => 'CA'));
+
+    //verify that get parameters client_server_id and ip exist!
+    $slave_server = Server::find(Input::get('slave_server_id'));
+    
+    $input['ip'] = Input::get('ip');
+    //dd(array('1'=>$slave_server, '2'=>$input));
+
+    $notification_status = 0;
+    if (!is_null($slave_server) && !is_null($input['ip'])) {
+        DB::transaction(function() use ($slave_server, $input, &$notification_status)
+        {
+            //$notification = Notification::where('client_id','=',$slave_server->client_id)->first();
+
+            /*$date = new DateTime;
+
+            
+            $from = new DateTime;
+            
+            $to = new DateTime;
+            date_add($to, date_interval_create_from_date_string('30 min'));
+            date_sub($from, date_interval_create_from_date_string('30 min'));
+
+
+            $notification = Notification::whereBetween('created_at', array($from, $to))->where('client_id','=',$slave_server->client_id)->first();   */
+            $notification = Notification::where('new_ip', '=', $input['ip'])->first();
+            
+            if (is_null($notification)) {
+                
+                    
+                $timestamp = new DateTime();
+                $date = $timestamp->format('Y-m-d H:i:s');
+                
+                $notification = new Notification(array(
+                                'new_ip'=>$input['ip'],
+                                'client_id'=>$slave_server->id,
+                                'created_at' => $date,
+                                'updated_at' => $date
+                                
+                            ));
+                $notification->save();
+                
+                $notification->notification_server()->attach($slave_server->id, array('created_at' => $date,'updated_at' => $date));
+                $notification_status=1;
+                
+            }
+            else
+            {
+                $row = DB::table('notification_server')->where('server_id','=',$slave_server->id)->where('notification_id','=',$notification->id)->first();
+                $timestamp = new DateTime();
+                $date = $timestamp->format('Y-m-d H:i:s');
+
+                if (is_null($row)) {
+                    $notification->notification_server()->attach($slave_server->id, array('created_at' => $date,'updated_at' => $date));    
+                    $notification_status = 1;
+                }
+                else{
+                    $notifications_status = 2;
+                }
+                
+
+            }
+            
+            
+        });
+    
+    }
+
+    return Response::json(array('status'=>$notification_status));
+    
+    
 
 });
 
 Route::get('master', function(){
-    
-    $notifications = Notification::all();
+  
+    $master_server = Server::where('type','=','master')->first();
+    $response = array();
+    $response['ip']=$master_server->ip;
+    return Response::json($response);
+
+
+/*    $notifications = Notification::all();
     foreach ($notifications as $notification) {
 
         $ip = Ip::where('ip','=',$notification->old_ip)->first();
         $client = Client::find($ip->client_id);
 
 
+    }*/
+});
+
+Route::get('slave_sync', function(){
+    $results = array();
+
+    $slave_ip = gethostbyname($_SERVER['REMOTE_ADDR']);
+
+    $slave_ip = '10.1.10.149'; //developinggg
+    $slave_server = Server::where('ip','=',$slave_ip)->first();
+
+    $dns_servers = Server::where('type','=','dns')->select(array('id','ip'))->get();
+    $results['dns_servers'] = $dns_servers->toArray();
+
+    $clients_monitored = get_server_clients($slave_server);
+    $results['clients_monitored'] = $clients_monitored->toArray();
+
+    return Response::json($results);
+});
+
+Route::get('clients', function(){
+    $server_id = Input::get('server_id');
+
+    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$server_id)->get();
+    
+    $result = array();
+
+    foreach ($clients_id as $key => $value) {
+        
+        // explode the sub-array, and add the parts
+        array_push($result, $value->client_id);
+        
     }
+
+    return Response::json($result);
 });
 
 
@@ -324,11 +440,11 @@ function get_master_server()
 
 }
 
-function get_server_clients($local_server)
+function get_server_clients($slave_server)
 {
-    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$local_server->id)->get();
 
-    
+
+    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$slave_server->id)->get();
     
     $result = array();
 
@@ -366,4 +482,42 @@ function urlExists($url=NULL)
     } else {  
         return false;  
     }  
+}
+
+function get_fcontent( $url,  $javascript_loop = 0, $timeout = 5 ) {
+    $url = str_replace( "&amp;", "&", urldecode(trim($url)) );
+
+    $cookie = tempnam ("/tmp", "CURLCOOKIE");
+    $ch = curl_init();
+    curl_setopt( $ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
+    curl_setopt( $ch, CURLOPT_URL, $url );
+    curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie );
+    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+    curl_setopt( $ch, CURLOPT_ENCODING, "" );
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+    curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
+    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
+    curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
+    curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
+    curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+    $content = curl_exec( $ch );
+    $response = curl_getinfo( $ch );
+    curl_close ( $ch );
+
+    if ($response['http_code'] == 301 || $response['http_code'] == 302) {
+        ini_set("user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1");
+
+        if ( $headers = get_headers($response['url']) ) {
+            foreach( $headers as $value ) {
+                if ( substr( strtolower($value), 0, 9 ) == "location:" )
+                    return get_url( trim( substr( $value, 9, strlen($value) ) ) );
+            }
+        }
+    }
+
+    if (    ( preg_match("/>[[:space:]]+window\.location\.replace\('(.*)'\)/i", $content, $value) || preg_match("/>[[:space:]]+window\.location\=\"(.*)\"/i", $content, $value) ) && $javascript_loop < 5) {
+        return get_url( $value[1], $javascript_loop+1 );
+    } else {
+        return array( $content, $response );
+    }
 }

@@ -1,7 +1,6 @@
 @extends('layouts.master')
 
 @section('content')
-
 <style type="text/css">
 	
 </style>
