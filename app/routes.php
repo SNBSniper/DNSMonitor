@@ -15,14 +15,13 @@
 Route::get('servers',function(){
     $servers = Server::where('type','=','slave')->orWhere('type','=','master')->get();
     
-
     return View::make('servers')->with('servers',$servers);
 });
 Route::get('/', function()
 {
     
     $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
-    $local_ip = '10.1.10.149'; //developinggg
+    $local_ip = '192.168.0.105'; //developinggg
     $slave_server = Server::where('ip','=',$local_ip)->first();
     
 
@@ -46,19 +45,13 @@ Route::get('/', function()
 
         return View::make('home')->with(array('ips'=>$ips, 'server'=>$slave_server, 'clients'=>$clients_monitored));
         
-    }
-	
-
-	
-	
-
-	
+    }	
 });
 
 Route::get('init', function(){
     ini_set('max_execution_time', 300);
     $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
-    $local_ip = '10.1.10.149';
+    $local_ip = '192.168.0.105';
 
     $slave_server = Server::where('ip','=',$local_ip)->first();
     
@@ -173,7 +166,7 @@ Route::get('monitor', function(){
     
     ini_set('max_execution_time', 300);
     $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
-    $local_ip = '10.1.10.149';
+    $local_ip = '192.168.0.105';
     $slave_server = Server::where('ip','=',$local_ip)->first();
 
 

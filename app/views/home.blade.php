@@ -1,41 +1,41 @@
 @extends('layouts.master')
 
 @section('content')
-<style type="text/css">
-	
-</style>
-<h1>This is a {{$server->type}} server </h1>
-<h2>IP: {{$server->ip}}:{{$server->port}} </h2>
-<h3>Clients Monitored by this server ({{count($clients)}})</h3>
-
-@if (isset($clients))
-	@foreach ($clients as $client) 
-		
-		
-		<b>{{$client->name}}</b><br>
-		
-		
-	@endforeach
-
-@else
-
-@endif
 
 
-<h4> IP/Hostnames being monitored by this server</h4>
-@foreach ($ips as $client) 
-	
-	
-	{{$client->name}} , {{$client->ip}}<br>
-	
-	<ul>
-	
-	</ul>
-@endforeach
+<h1 class="page-header"><i class="fa fa-desktop"></i> This is a {{ $server->type }} server <small>IP: {{$server->ip}}:{{$server->port}} </small></h1>
 
+<div class="panel panel-default">
+  	<div class="panel-heading">
+    	<h3 class="panel-title"><i class="fa fa-users"></i> Clients monitored by this server ({{count($clients)}})</h3>
+  	</div>
+  	<div class="panel-body">
+		@if (isset($clients))
+			<ul>
+			@foreach ($clients as $client)
+				<li>{{$client->name}}</li>
+			@endforeach
+			</ul>
+		@else
 
+		@endif
+  	</div>
+</div>
 
+<div class="panel panel-default">
+  	<div class="panel-heading">
+    	<h3 class="panel-title"><i class="fa fa-search"></i> IP/Hostnames being monitored by this server</h3>
+  	</div>
+  	<div class="panel-body">
+  		<dl class="dl-horizontal">
+		@foreach ($ips as $client)
+			<dt>{{$client->name}}</dt>
+			<dd>{{$client->ip}}</dd>
+		@endforeach
+		</dl>
+  	</div>
 
-
+  
+</div>
 
 @stop

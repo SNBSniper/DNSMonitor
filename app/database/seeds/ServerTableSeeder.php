@@ -16,7 +16,7 @@ class ServerTableSeeder extends Seeder {
 
 		Server::create(array(
 			'provider'=>'localhost',
-			'ip'=>'10.1.10.149',
+			'ip'=>'192.168.0.105',
 			'type'=>'slave',
 			'port'=>'80',
 			'created_at' => new DateTime,
