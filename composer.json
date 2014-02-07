@@ -5,13 +5,12 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.1.*",
+		"components/jquery": "1.9.*",
+		"liebig/cron": "dev-master"
+	},
+	"require-dev": {
 		"way/generators": "dev-master",
-		"darsain/laravel-console": "dev-master",
-		"components/jquery": "1.9.*"
-
-		
-
-
+		"darsain/laravel-console": "dev-master"
 	},
 	"minimum-stability" : "dev",
 	"autoload": {
