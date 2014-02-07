@@ -16,8 +16,14 @@
     <![endif]-->
   </head>
   <body>
+  <nav>
+    {{HTML::link('/', 'Home |')}}
+    {{HTML::link('servers', 'Servidores |')}}
+    {{HTML::link('init','Initialize Server |')}}
+    
+    
+  </nav>
 
-  HOLAAA
   	@yield('content')
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

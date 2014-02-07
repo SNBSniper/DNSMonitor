@@ -13,7 +13,10 @@
 
 
 Route::get('servers',function(){
-    return View::make('servers');
+    $servers = Server::where('type','=','slave')->orWhere('type','=','master')->get();
+    
+
+    return View::make('servers')->with('servers',$servers);
 });
 Route::get('/', function()
 {
