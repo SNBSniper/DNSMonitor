@@ -5,8 +5,7 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.1.*",
-		"components/jquery": "1.9.*",
-		"liebig/cron": "dev-master"
+		"components/jquery": "1.9.*"
 	},
 	"require-dev": {
 		"way/generators": "dev-master",

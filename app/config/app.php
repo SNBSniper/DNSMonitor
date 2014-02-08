@@ -107,7 +107,6 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		'Darsain\Console\ConsoleServiceProvider',
-		'Liebig\Cron\CronServiceProvider',
 
 	),
 
