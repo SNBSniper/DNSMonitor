@@ -94,3 +94,11 @@ App::down(function()
 */
 
 require app_path().'/filters.php';
+
+/*
+|--------------------------------------------------------------------------
+| Require The Custom Helpers File
+|--------------------------------------------------------------------------
+*/
+
+require app_path().'/helpers.php';

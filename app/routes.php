@@ -1,34 +1,23 @@
 <?php
 
-/*
-|--------------------------------------------------------------------------
-| Application Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register all of the routes for an application.
-| It's a breeze. Simply tell Laravel the URIs it should respond to
-| and give it the Closure to execute when that URI is requested.
-|
-*/
-
-
 Route::get('servers',function(){
     $servers = Server::where('type','=','slave')->orWhere('type','=','master')->get();
     
     return View::make('servers')->with('servers',$servers);
 });
+
 Route::get('/', function()
 {
-    
-    $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
-    $local_ip = '192.168.0.105'; //developinggg
-    $slave_server = Server::where('ip','=',$local_ip)->first();
-    
-
+    /**
+     * Get the IP from server running the current php script
+     * (Note. You may have to change the /etc/hosts file to map nginx)
+     * @var String
+     */
+    $local_ip = Request::server('SERVER_ADDR');
+    $slave_server = Server::whereIp($local_ip)->first();
     
     if( $slave_server->type == 'master' )
     {
-        
         $clients = Client::all();
         $servers = Server::all();
 
@@ -37,7 +26,8 @@ Route::get('/', function()
     
     else
     {
-        $clients_monitored = get_server_clients($slave_server);
+        // $clients_monitored = get_server_clients($slave_server);
+        $clients_monitored = $slave_server->clients;
 
         
         // select ip, client_id from ips where ip IS NOT NULL group by ip;
@@ -53,7 +43,7 @@ Route::get('init', function(){
     $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
     $local_ip = '192.168.0.105';
 
-    $slave_server = Server::where('ip','=',$local_ip)->first();
+    $slave_server = Server::whereIp($local_ip)->first();
     
     /*$urls = $slave_server->urls()->get();
 
@@ -63,7 +53,7 @@ Route::get('init', function(){
         $url->save();
     }*/
 
-    $dns_servers = Server::where('type','=','dns')->get();
+    $dns_servers = Server::dns()->get();
 
     
     $clients_monitored = get_server_clients($slave_server);
@@ -413,107 +403,11 @@ Route::get('slave_sync', function(){
 Route::get('clients', function(){
     $server_id = Input::get('server_id');
 
-    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$server_id)->get();
-    
-    $result = array();
+    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$server_id)->lists('client_id');
 
-    foreach ($clients_id as $key => $value) {
-        
-        // explode the sub-array, and add the parts
-        array_push($result, $value->client_id);
-        
-    }
-
-    return Response::json($result);
+    return Response::json($clients_id);
 });
 
 
 
-function get_master_server()
-{
-    return Server::where('type','=','master')->first();
-
-
-}
-
-function get_server_clients($slave_server)
-{
-
-
-    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$slave_server->id)->get();
-    
-    $result = array();
-
-    foreach ($clients_id as $key => $value) {
-        
-        // explode the sub-array, and add the parts
-        array_push($result, $value->client_id);
-        
-    }
-    $clients_monitored = NULL;
-    if (count($result)>0) {
-        $clients_monitored = Client::whereIn('id',$result)->get();
-    }
-    
-    
-    return $clients_monitored;
-
-
-}
-
-
-
-function urlExists($url=NULL)  
-{  
-    if($url == NULL) return false;  
-    $ch = curl_init($url);  
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5);  
-    curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);  
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);  
-    $data = curl_exec($ch);  
-    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);  
-    curl_close($ch);  
-    if($httpcode>=200 && $httpcode<300){  
-        return true;  
-    } else {  
-        return false;  
-    }  
-}
-
-function get_fcontent( $url,  $javascript_loop = 0, $timeout = 5 ) {
-    $url = str_replace( "&amp;", "&", urldecode(trim($url)) );
-
-    $cookie = tempnam ("/tmp", "CURLCOOKIE");
-    $ch = curl_init();
-    curl_setopt( $ch, CURLOPT_USERAGENT, "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
-    curl_setopt( $ch, CURLOPT_URL, $url );
-    curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie );
-    curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
-    curl_setopt( $ch, CURLOPT_ENCODING, "" );
-    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-    curl_setopt( $ch, CURLOPT_AUTOREFERER, true );
-    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );    # required for https urls
-    curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
-    curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
-    curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
-    $content = curl_exec( $ch );
-    $response = curl_getinfo( $ch );
-    curl_close ( $ch );
-
-    if ($response['http_code'] == 301 || $response['http_code'] == 302) {
-        ini_set("user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1");
-
-        if ( $headers = get_headers($response['url']) ) {
-            foreach( $headers as $value ) {
-                if ( substr( strtolower($value), 0, 9 ) == "location:" )
-                    return get_url( trim( substr( $value, 9, strlen($value) ) ) );
-            }
-        }
-    }
-
-    if (    ( preg_match("/>[[:space:]]+window\.location\.replace\('(.*)'\)/i", $content, $value) || preg_match("/>[[:space:]]+window\.location\=\"(.*)\"/i", $content, $value) ) && $javascript_loop < 5) {
-        return get_url( $value[1], $javascript_loop+1 );
-    } else {
-        return array( $content, $response );
-    }
-}
+/* I moved all this functions to the app/helpers.php file, where they belong */

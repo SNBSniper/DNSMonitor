@@ -13,12 +13,12 @@
             <div class="info">
                 <h3 class="title">Servidor: {{$server->ip}} <br> {{ ucwords($server->type) }}</h3>
                 <p>
-                    @foreach ($server->clients()->get() as $client)
+                    @foreach ($server->clients as $client)
                     
                     @endforeach
                 </p>
                 <h4></h4>
-                @foreach ($server->clients()->get() as $client)
+                @foreach ($server->clients as $client)
                 <ul class="list-group">
                   <li class="list-group-item"><b>Nombre del Cliente:</b> {{$client->name}}</li>
                   <li class="list-group-item"><b>Hostname:</b> {{$client->hostname}}</li>
