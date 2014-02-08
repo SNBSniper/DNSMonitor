@@ -152,6 +152,10 @@ Route::get('get_clients',function(){
     
 });
 
+Route::get('monitor-mock', function(){
+    return Response::json(array('notifications' => true ));
+});
+
 Route::get('monitor', function(){
     
     ini_set('max_execution_time', 300);
@@ -406,6 +410,11 @@ Route::get('clients', function(){
     $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$server_id)->lists('client_id');
 
     return Response::json($clients_id);
+});
+
+Route::get('notificationss', function(){
+    return View::make('notificationss')
+        ->with('notifications', Notification::orderBy('id', 'DESC')->get());
 });
 
 

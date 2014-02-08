@@ -3,7 +3,7 @@
 @section('content')
 
 
-<h1 class="page-header"><i class="fa fa-desktop"></i> This is a {{ $server->type }} server <small>IP: {{$server->ip}}:{{$server->port}} </small></h1>
+<h1 class="page-header"><i class="fa fa-desktop"></i> This is a {{ $server->type }} server <small>{{$server->ip}}:{{$server->port}} </small></h1>
 
 <div class="panel panel-default">
   	<div class="panel-heading">
