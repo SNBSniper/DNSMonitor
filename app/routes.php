@@ -119,7 +119,8 @@ Route::get('init', function(){
 
             
         }
-        return "Initilization Complete";
+
+
     }
     else
     {
@@ -410,4 +411,6 @@ Route::get('clients', function(){
 
 
 
-/* I moved all this functions to the app/helpers.php file, where they belong */
+/* I moved all this functions to the app/helpers.php file, where they belong 
+- I see ... good to know 
+*/
