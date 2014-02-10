@@ -78,3 +78,14 @@ Route::filter('csrf', function()
 		throw new Illuminate\Session\TokenMismatchException;
 	}
 });
+
+
+Route::filter('master', function()
+{
+    if (Server::current()->type != 'master') return App::abort(405, 'Not Allowed. Not a master server');
+});
+
+Route::filter('slave', function()
+{
+    if (Server::current()->type != 'slave') return App::abort(405, 'Not Allowed. Not a slave server');
+});

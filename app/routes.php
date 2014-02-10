@@ -1,49 +1,38 @@
 <?php
 
 Route::get('servers',function(){
-    $servers = Server::where('type','=','slave')->orWhere('type','=','master')->get();
+    $servers = Server::nonDns()->get();
     
     return View::make('servers')->with('servers',$servers);
 });
 
 Route::get('/', function()
 {
-    /**
-     * Get the IP from server running the current php script
-     * (Note. You may have to change the /etc/hosts file to map nginx)
-     * @var String
-     */
-    $local_ip = Request::server('SERVER_ADDR');
-    $slave_server = Server::whereIp($local_ip)->first();
+    $currentServer = Server::current();
     
-    if( $slave_server->type == 'master' )
-    {
-        $clients = Client::all();
-        $servers = Server::all();
+    if( $currentServer->type == 'master' )
+        return View::make('home')
+            ->with('clients', Client::all())
+            ->with('servers', Server::all());
 
-        return View::make('home')->with(array('clients'=>$clients,'servers'=>$servers));
-    }
-    
-    else
-    {
-        // $clients_monitored = get_server_clients($slave_server);
-        $clients_monitored = $slave_server->clients;
 
-        
-        // select ip, client_id from ips where ip IS NOT NULL group by ip;
-        $ips = DB::table('ips')->select('ip','name')->whereNotNull('ip')->join('clients','clients.id','=','ips.client_id')->groupBy('ip')->orderBy('name','asc')->get();
+    $clients_monitored = $currentServer->clients;
 
-        return View::make('home')->with(array('ips'=>$ips, 'server'=>$slave_server, 'clients'=>$clients_monitored));
-        
-    }	
+    // select ip, client_id from ips where ip IS NOT NULL group by ip;
+    $ips = DB::table('ips')->select('ip','name')->whereNotNull('ip')->join('clients','clients.id','=','ips.client_id')->groupBy('ip')->orderBy('name','asc')->get();
+
+    return View::make('home')->with(array('ips'=>$ips, 'server'=>$currentServer, 'clients'=>$clients_monitored));
+});
+
+Route::get('notificationss', function(){
+    return View::make('notificationss')
+        ->with('notifications', Notification::orderBy('id', 'DESC')->get());
 });
 
 Route::get('init', function(){
     ini_set('max_execution_time', 300);
-    $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
-    $local_ip = '192.168.0.105';
-
-    $slave_server = Server::whereIp($local_ip)->first();
+    
+    $slave_server = Server::current();
     
     /*$urls = $slave_server->urls()->get();
 
@@ -55,7 +44,6 @@ Route::get('init', function(){
 
     $dns_servers = Server::dns()->get();
 
-    
     $clients_monitored = get_server_clients($slave_server);
 
     if (!is_null($clients_monitored)) {
@@ -150,10 +138,6 @@ Route::get('get_clients',function(){
 
 
     
-});
-
-Route::get('monitor-mock', function(){
-    return Response::json(array('notifications' => true ));
 });
 
 Route::get('monitor', function(){
@@ -412,11 +396,29 @@ Route::get('clients', function(){
     return Response::json($clients_id);
 });
 
-Route::get('notificationss', function(){
-    return View::make('notificationss')
-        ->with('notifications', Notification::orderBy('id', 'DESC')->get());
+Route::get('monitor-mock', function(){
+    Log::info('The server started monitoring');
+    $not = new Notification;
+    $not->new_ip = '0.0.0.0';
+    $not->client_id = 3;
+    $not->save();
+    Log::info('The server finished monitoring');
+    return Response::json(array('notifications' => true ));
 });
 
+/**
+ * Route Group for Master Server API
+ */
+Route::group(array('prefix' => 'api/v1'), function() {
+    Route::post('change-refresh-rate', 'MasterServerController@changeRefreshRate');
+});
 
-
-/* I moved all this functions to the app/helpers.php file, where they belong */
+/**
+ * Route Group for Slave Servers API
+ */
+Route::group(array('prefix' => 'api/v2'), function() {
+    Route::get('change-refresh-rate/{rate?}', 'SlaveServerController@changeRefreshRate');
+    Route::get('cron/status', 'SlaveServerController@getCronStatus');
+    Route::get('cron/stop', 'SlaveServerController@stopCron');
+    Route::get('cron/start', 'SlaveServerController@startCron');
+});

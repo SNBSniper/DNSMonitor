@@ -5,7 +5,8 @@
 	"license": "MIT",
 	"require": {
 		"laravel/framework": "4.1.*",
-		"components/jquery": "1.9.*"
+		"components/jquery": "1.9.*",
+		"jyggen/curl": "3.1.*@dev"
 	},
 	"require-dev": {
 		"way/generators": "dev-master",

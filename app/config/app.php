@@ -4,6 +4,20 @@ return array(
 
 	/*
 	|--------------------------------------------------------------------------
+	| Application IP Address
+	|--------------------------------------------------------------------------
+	|
+	| When using the application with your public IP but for production, use option 1
+	| when using the application with your local IP, use option 2
+	| when using the application with your public IP but for development, use option 3
+	|
+	*/
+	// 'ip' => gethostbyname(Request::server('HTTP_HOST')), // For Production
+	// 'ip' => '192.168.0.105',                             // For Development when using local IP
+	'ip' => file_get_contents('http://phihag.de/ip/'),   // For Development when using public IP (http://stackoverflow.com/questions/7909362/how-do-i-get-the-external-ip-of-my-server-using-php)
+
+	/*
+	|--------------------------------------------------------------------------
 	| Application Debug Mode
 	|--------------------------------------------------------------------------
 	|
@@ -107,6 +121,7 @@ return array(
 		'Illuminate\View\ViewServiceProvider',
 		'Illuminate\Workbench\WorkbenchServiceProvider',
 		'Darsain\Console\ConsoleServiceProvider',
+		'Way\Generators\GeneratorsServiceProvider',
 
 	),
 
