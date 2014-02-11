@@ -2,40 +2,64 @@
 
 @section('content')
 
-
 <h1 class="page-header"><i class="fa fa-desktop"></i> This is a {{ $server->type }} server <small>{{$server->ip}}:{{$server->port}} </small></h1>
 
-<div class="panel panel-default">
-  	<div class="panel-heading">
-    	<h3 class="panel-title"><i class="fa fa-users"></i> Clients monitored by this server ({{count($clients)}})</h3>
-  	</div>
-  	<div class="panel-body">
-		@if (isset($clients))
-			<ul>
-			@foreach ($clients as $client)
-				<li>{{$client->name}}</li>
-			@endforeach
-			</ul>
-		@else
 
-		@endif
-  	</div>
+<div class="row">
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-users"></i> Clients ({{ count($clients) }})</h3>
+            </div>
+            <div class="panel-body panel-scroll">
+                <ul>
+                @foreach ($clients as $client)
+                    <li>{{ $client->name }}</li>
+                @endforeach
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-desktop"></i> DNS Servers ({{count($dns_servers)}})</h3>
+            </div>
+            <div class="panel-body panel-scroll">
+              <ul class="list-unstyled">
+                <li><i class="fa fa-times red"></i> UTFSM : 0.0.6.66</li>
+                @foreach ($dns_servers as $dns)
+                    <li><i class="fa fa-check green"></i> {{ $dns->provider }} : {{ $dns->ip }}</li>
+                @endforeach    
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="panel panel-default">
-  	<div class="panel-heading">
-    	<h3 class="panel-title"><i class="fa fa-search"></i> IP/Hostnames being monitored by this server</h3>
-  	</div>
-  	<div class="panel-body">
-  		<dl class="dl-horizontal">
-		@foreach ($ips as $client)
-			<dt>{{$client->name}}</dt>
-			<dd>{{$client->ip}}</dd>
-		@endforeach
-		</dl>
-  	</div>
-
-  
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+          	<div class="panel-heading">
+            	<h3 class="panel-title"><i class="fa fa-search"></i> IP/Hostnames being monitored</h3>
+          	</div>
+          	<div class="panel-body">
+          		<dl class="dl-horizontal">
+        		@foreach ($ips as $client)
+        			<dt>{{$client->name}}</dt>
+        			<dd>{{$client->ip}}</dd>
+        		@endforeach
+        		</dl>
+          	</div>  
+        </div>
+    </div>
 </div>
+@stop
 
+@section('css')
+@parent
+<style>
+    i.green { color: yellowgreen; }
+    i.red   { color: #FF4136; }
+    .panel-scroll { height: 300px; overflow: scroll; }
+</style>
 @stop

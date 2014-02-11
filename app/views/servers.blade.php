@@ -12,6 +12,7 @@
                 <div class="image {{ $server->type }}"><i class="fa fa-desktop"></i></div>
                 <div class="info">
                     <h3 class="title">{{$server->ip}}<br><small>{{ ucwords($server->type) }}</small></h3>
+                    <h6>{{ $server->provider }}</h6>
                     
                     @if ($server->type != 'master')
                     <p data-toggle="tooltip" data-placement="top" title="How often the server monitors DNS changes" class="tooltipp">
@@ -20,8 +21,7 @@
                     @endif
                     @foreach ($server->clients as $client)
                     <ul class="list-group">
-                      <li class="list-group-item"><b>Nombre del Cliente:</b> {{$client->name}}</li>
-                      <li class="list-group-item"><b>Hostname:</b> {{$client->hostname}}</li>
+                        <li class="list-group-item">{{ $client->name }} § {{ $client->hostname }}</li>
                     </ul>
                     @endforeach
                     @if ( $server->type != 'master')
@@ -87,13 +87,22 @@
     /*.box > .icon:hover > .image > i { color: white !important; }*/
     .box > .icon > .info { margin-top: -24px; background: rgba(0, 0, 0, 0.04); border: 1px solid #e0e0e0; padding: 15px 0 10px 0; }
     /*.box > .icon:hover > .info { background: rgba(0, 0, 0, 0.04); border-color: #e0e0e0; color: white; }*/
-    .box > .icon > .info > h3.title { font-size: 18px; color: #222; font-weight: 800; }
+    .box > .icon > .info > h3.title { font-size: 18px; color: #222; font-weight: 800; margin-bottom: 0; }
+    .box > .icon > .info > h6 { color: #999; font-weight: 200; margin-top: 0; }
     .box > .icon > .info > h3.title > small { font-size: 16px; }
     .box > .icon > .info > p { font-size: 13px; color: #666; line-height: 1.5em; margin: 20px;}
     /*.box > .icon:hover > .info > h3.title, .box > .icon:hover > .info > p, .box > .icon:hover > .info > .more > a { color: #222; }*/
     .box > .icon > .info > .more a { font-family: "Roboto",sans-serif !important; font-size: 12px; color: #222; line-height: 12px; text-transform: uppercase; text-decoration: none; }
     /*.box > .icon:hover > .info > .more > a { color: #fff; padding: 6px 8px; background-color: #63B76C; }*/
     .box .space { height: 30px; }
+</style>
+@stop
+
+@section('css')
+@parent
+<style>
+    .list-group{ margin-bottom: 5px; font-size: 12px;}
+    .list-group-item { padding: 2px 15px; }
 </style>
 @stop
 

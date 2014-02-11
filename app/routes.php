@@ -19,6 +19,7 @@ Route::get('/', function()
         return View::make('home')
             ->with('clients', Client::all())
             ->with('servers', Server::all())
+            ->with('dns_servers', Server::dns()->get())
             ->with('server', Server::current())
             ->with('ips', $ips);
 
