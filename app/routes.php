@@ -9,17 +9,18 @@ Route::get('servers',function(){
 Route::get('/', function()
 {
     $currentServer = Server::current();
-    
-    if( $currentServer->type == 'master' )
-        return View::make('home')
-            ->with('clients', Client::all())
-            ->with('servers', Server::all());
-
 
     $clients_monitored = $currentServer->clients;
 
     // select ip, client_id from ips where ip IS NOT NULL group by ip;
     $ips = DB::table('ips')->select('ip','name')->whereNotNull('ip')->join('clients','clients.id','=','ips.client_id')->groupBy('ip')->orderBy('name','asc')->get();
+
+    if( $currentServer->type == 'master' )
+        return View::make('home')
+            ->with('clients', Client::all())
+            ->with('servers', Server::all())
+            ->with('server', Server::current())
+            ->with('ips', $ips);
 
     return View::make('home')->with(array('ips'=>$ips, 'server'=>$currentServer, 'clients'=>$clients_monitored));
 });
