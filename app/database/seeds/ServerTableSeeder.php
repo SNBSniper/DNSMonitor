@@ -6,18 +6,18 @@ class ServerTableSeeder extends Seeder {
 		DB::table('servers')->delete();
 		
 		Server::create(array(
-			'provider'=>'localhost',
-			'ip'=>'10.1.10.144',
-			'type'=>'master',
+			'provider'=>'jpeg',
+			'ip'=>'190.105.36.9',
+			'type'=>'slave',
 			'port'=>'80',
 			'created_at' => new DateTime,
 			'updated_at' => new DateTime
 		));
 
 		Server::create(array(
-			'provider'=>'localhost',
-			'ip'=>'192.168.0.105',
-			'type'=>'slave',
+			'provider'=>'danielftapiar',
+			'ip'=>'190.161.79.11',
+			'type'=>'master',
 			'port'=>'80',
 			'created_at' => new DateTime,
 			'updated_at' => new DateTime

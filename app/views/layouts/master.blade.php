@@ -1,5 +1,4 @@
-
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
     <title>DNS Monitor</title>
@@ -37,17 +36,20 @@
       <ul class="nav navbar-nav">
         <li><a href="{{ url('/') }}"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="{{ url('/servers') }}"><i class="fa fa-cloud"></i> Servidores</a></li>
-        <li><a href="{{ url('/init') }}"><i class="fa fa-cog"></i> Initialize Server</a></li>
+        <li><a href="{{ url('/notificationss') }}"><i class="fa fa-bell-o"></i> Notifications</a></li>
       </ul>
+      <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn pull-right"><i class="fa fa-cog"></i> Initialize Server</a>
     </div><!-- /.navbar-collapse -->
     </div>
   </nav>
   <div class="container">
   	@yield('content')
   </div>
+    @section('js')
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
+    @show
   </body>
 </html>
