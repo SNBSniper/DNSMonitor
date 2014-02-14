@@ -47,6 +47,8 @@ class Server extends Eloquent{
 		return $query->where('type','=','slave')->orWhere('type','=','master');
 	}
 
+	
+
 	/**
 	 * Scope Query to fetch the current server
 	 * 
@@ -56,5 +58,19 @@ class Server extends Eloquent{
 	public function scopeCurrent($query)
 	{
 		return $query->whereIp( Config::get('app.ip') )->first();
+	}
+
+	public static function validate($input)
+	{
+		
+		$rules = array(
+					'ip'=>'required|ip',
+					'provider'=>'required',
+					'type'=>'required|in:dns,master,slave'
+					);
+		
+		$v = Validator::make($input, $rules);	
+
+		return $v;
 	}
 }

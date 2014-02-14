@@ -5,6 +5,28 @@
 <h1 class="page-header"><i class="fa fa-desktop"></i> This is a {{ $server->type }} server <small>{{$server->ip}}:{{$server->port}} </small></h1>
 
 
+@if (Session::has('success'))
+  <div class="alert alert-success">{{Session::get('success')}}</div>
+
+@endif
+
+@if (Session::has('fail'))
+  <div class="alert alert-danger">{{Session::get('fail')}}</div>  
+@endif
+<div class="panel panel-default">
+  	<div class="panel-heading">
+    	<h3 class="panel-title"><i class="fa fa-users"></i> Clients monitored by this server ({{count($clients)}})</h3>
+  	</div>
+  	<div class="panel-body">
+		@if (isset($clients))
+			<ul>
+			@foreach ($clients as $client)
+				<li>{{$client->name}}</li>
+			@endforeach
+			</ul>
+		@else
+
+
 <div class="row">
     <div class="col-sm-6">
         <div class="panel panel-default">

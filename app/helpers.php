@@ -101,7 +101,7 @@ function get_server_clients($slave_server)
     }
     
     
-    return $clients_monitored;
+    return $clients_monitored; //array of Client objects
 
 
 }

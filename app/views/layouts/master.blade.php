@@ -38,7 +38,15 @@
         <li><a href="{{ url('/servers') }}"><i class="fa fa-cloud"></i> Servidores</a></li>
         <li><a href="{{ url('/notificationss') }}"><i class="fa fa-bell-o"></i> Notifications</a></li>
       </ul>
-      <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn pull-right"><i class="fa fa-cog"></i> Initialize Server</a>
+
+
+      <?php $init = Application::where('started', '=', 1)->first();
+      
+       ?>
+       @if (is_null($init))
+        <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn pull-right"><i class="fa fa-cog"></i> Initialize Server</a>
+       @endif
+      
     </div><!-- /.navbar-collapse -->
     </div>
   </nav>
@@ -48,8 +56,11 @@
     @section('js')
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
+
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="js/bootstrap.min.js"></script>
+    
     @show
   </body>
 </html>
