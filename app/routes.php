@@ -6,6 +6,40 @@ Route::get('servers',function(){
     return View::make('servers')->with('servers',$servers);
 });
 
+Route::get('create-server', function(){
+
+    $ip = file_get_contents("http://wtfismyip.com/text");
+    if (!is_null($ip) && !(strlen($ip) <= 1 ) ) {
+        return View::make('create_server')->with('ip',$ip);
+    }
+    else
+        return View::make('create_server');
+
+    
+});
+
+Route::post('init-server', function(){
+    $input = Input::all();
+    $validation = Server::validate($input);
+    
+    if ($validation->passes()) {
+        DB::transaction(function() use ($input)
+        {
+            $date = new \DateTime;
+            $server = new Server($input);
+            $server->port=80;
+            $server->refresh_rate=15;
+            $server->save();
+            
+        });
+
+        return Redirect::to('create-server')->with('success','Server Created Succesfully');
+    }
+    else
+        return Redirect::to('create-server')->with('fail', $validation->messages);
+});
+
+
 Route::get('/', function()
 {
     $currentServer = Server::current();
@@ -30,9 +64,123 @@ Route::get('notificationss', function(){
         ->with('notifications', Notification::orderBy('id', 'DESC')->get());
 });
 
-Route::get('init', function(){
+Route::get('start',function(){
     ini_set('max_execution_time', 300);
+
     
+
+    $dns_servers = Server::dns()->get();
+
+    $clients_monitored = Client::all();
+
+    if (!is_null($clients_monitored)) {
+
+        foreach ($clients_monitored as $client) {
+
+            foreach ($dns_servers as $dns_server) {
+
+                $hostName = $client->hostname;
+                $result = `nslookup $hostName $dns_server->ip` ;
+                $result = trim($result);
+                $result = strtolower($result);
+                preg_match('/address: (.*)/', $result, $matches);
+                
+                if ( array_key_exists(1, $matches) ) // if an nslookup returns a value then validate it
+                {
+                    $input =  array( 'ip' => $matches[1]);
+
+                    
+                    $validation = Ip::validate($input);
+                    
+                    if ($validation->passes()) { // if it passes validation then insert it
+                        
+                        $row = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
+                        
+                        if (is_null($row)) { //check to see if the client_server row exists, if it doesn't create it, if it does then attach it
+
+                            DB::transaction(function() use ($client,$dns_server,$input)
+                            {
+                                $date = new \DateTime;
+
+                                $client->servers()->attach($dns_server->id, array('status'=>1,'created_at'=>$date, 'updated_at'=>$date));         
+                                $row = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
+
+                                $ip = new Ip(array('ip'=>$input['ip'], 'client_id'=>$client->id,'client_server_id'=>$row->id));
+                                $ip->save();
+
+                            });
+
+                        }
+                        else{
+                            // There should be none created since this is an initialization, only the if above should be going in.
+                        }
+                    }
+                    else{
+                        dd($validation->messages()->get());
+                    }
+                    
+                }
+                else // nslookup failed so we add status=0 to the client_server row to note that the server failed the lookup.
+                {
+                    DB::transaction(function() use ($client,$dns_server,$input)
+                    {
+                        $client->servers()->attach($dns_server->id, array('status'=>0));         
+                    });
+
+
+                }
+
+            }
+
+            
+        }
+        $application = new Application();
+        $application->started = true;
+        $application->save();
+        return Redirect::to('/')->with('success', 'Application Initalized!');
+    }
+    else
+    {
+        return Redirect::to('/')->with('fail', 'Application Failed to Initalize');
+
+    }
+});
+
+Route::get('init', function(){
+    
+    $master_server = Server::where('type','=','master');
+    $slave_servers = Server::where('type','=', 'slave')->get();
+    $is_master = false;
+    $ip = trim(file_get_contents("http://wtfismyip.com/text"));
+    
+    if (!is_null($master_server->first())) {
+        if ($master_server->first()->ip == $ip) {
+            $is_master = true;
+        }
+    }
+
+
+    if (count($master_server->get()) != 1) {
+        return View::make('init_1')->with('message','There can only be one Master Server');
+    }
+    else if (count($slave_servers) <=  0)
+        return View::make('init_1')->with('message','There must be at least one Slave Server');
+    else
+        return View::make('init_1')->with('success', 'Server May be Initialized' )
+                                    ->with('master_server', $master_server->first())
+                                    ->with('slave_servers', $slave_servers)
+                                    ->with('is_master', $is_master);
+    
+    
+    
+    
+
+
+
+
+
+
+
     $slave_server = Server::current();
     
     /*$urls = $slave_server->urls()->get();
@@ -115,8 +263,37 @@ Route::get('init', function(){
     {
         return "Server is not assigned Clients to monitor";
     }
+
+});
+
+Route::post('init-master', function(){
     
+
+    $input =  array( 'ip' => Input::get('ip'));
+    dd($input);
     
+    $validation = Ip::validate($input);
+
+    
+    if ($validation->passes()) { // if it passes validation then insert it
+        DB::transaction(function() use ($input)
+        {
+            $date = new \DateTime;
+            //$server = new Server(array());
+            $client->servers()->attach($dns_server->id, array('status'=>1,'created_at'=>$date, 'updated_at'=>$date));         
+            $row = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
+
+            $ip = new Ip(array('ip'=>$input['ip'], 'client_id'=>$client->id,'client_server_id'=>$row->id));
+            $ip->save();
+
+        });
+    }
+    
+
+
+});
+
+Route::post('init-slave', function(){
 
 });
 

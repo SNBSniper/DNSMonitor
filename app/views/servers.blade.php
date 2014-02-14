@@ -3,7 +3,8 @@
 @section('content')
 
 <div class="row">
-    <h1 class="page-header">Servers</h1>
+{{HTML::link('create-server', 'Create Server', array('class'=>'btn btn-primary'))}}
+    <h1 class="page-header">Servers </h1> 
 
     @foreach ($servers as $server)
     <div class="col-xs-12 col-sm-6 col-lg-4">
