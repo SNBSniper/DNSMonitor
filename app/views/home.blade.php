@@ -13,18 +13,6 @@
 @if (Session::has('fail'))
   <div class="alert alert-danger">{{Session::get('fail')}}</div>  
 @endif
-<div class="panel panel-default">
-  	<div class="panel-heading">
-    	<h3 class="panel-title"><i class="fa fa-users"></i> Clients monitored by this server ({{count($clients)}})</h3>
-  	</div>
-  	<div class="panel-body">
-		@if (isset($clients))
-			<ul>
-			@foreach ($clients as $client)
-				<li>{{$client->name}}</li>
-			@endforeach
-			</ul>
-		@else
 
 
 <div class="row">
