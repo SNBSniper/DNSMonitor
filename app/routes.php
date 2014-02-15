@@ -1,5 +1,35 @@
 <?php
 
+Route::get('clientss',function(){
+    $clients = Client::all();
+    
+    return View::make('clients')->with('clients',$clients);
+});
+
+Route::post('create-client', function(){
+    $input = Input::all();
+    $validation = Client::validate($input);
+
+    if ($validation->passes()) {
+        DB::transaction(function() use ($input){
+            $date = new \DateTime;
+            $client = new Client($input);
+            $client->save();
+        });
+
+        return Redirect::to('create-client')->with('success','Client Created Succesfully');
+
+    }
+    else
+    {
+        return Redirect::to('create-client')->with('fail', $validation->messages);
+    }
+});
+
+Route::get('create-client', function(){
+    return View::make('create_client');
+});
+
 Route::get('servers',function(){
     $servers = Server::nonDns()->get();
     
@@ -42,22 +72,29 @@ Route::post('init-server', function(){
 
 Route::get('/', function()
 {
+    
     $currentServer = Server::current();
+    if ($currentServer->first() != null) {
+        $clients_monitored = $currentServer->clients;
+        
 
-    $clients_monitored = $currentServer->clients;
+        // select ip, client_id from ips where ip IS NOT NULL group by ip;
+        $ips = DB::table('ips')->select('ip','name')->whereNotNull('ip')->join('clients','clients.id','=','ips.client_id')->groupBy('ip')->orderBy('name','asc')->get();
 
-    // select ip, client_id from ips where ip IS NOT NULL group by ip;
-    $ips = DB::table('ips')->select('ip','name')->whereNotNull('ip')->join('clients','clients.id','=','ips.client_id')->groupBy('ip')->orderBy('name','asc')->get();
+        if( $currentServer->type == 'master' )
+            return View::make('home')
+                ->with('clients', Client::all())
+                ->with('servers', Server::all())
+                ->with('dns_servers', Server::dns()->get())
+                ->with('server', Server::current())
+                ->with('ips', $ips);
 
-    if( $currentServer->type == 'master' )
-        return View::make('home')
-            ->with('clients', Client::all())
-            ->with('servers', Server::all())
-            ->with('dns_servers', Server::dns()->get())
-            ->with('server', Server::current())
-            ->with('ips', $ips);
-
-    return View::make('home')->with(array('ips'=>$ips, 'server'=>$currentServer, 'clients'=>$clients_monitored));
+        return View::make('home')->with(array('ips'=>$ips, 'server'=>$currentServer, 'clients'=>$clients_monitored));
+    }
+    else
+        return View::make('home');
+    
+    
 });
 
 Route::get('notificationss', function(){
@@ -148,7 +185,8 @@ Route::get('start',function(){
 });
 
 Route::get('init', function(){
-    
+    ini_set('max_execution_time', 0);
+
     $master_server = Server::where('type','=','master');
     $slave_servers = Server::where('type','=', 'slave')->get();
     $is_master = false;

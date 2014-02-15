@@ -18,4 +18,18 @@ class Client extends Eloquent{
 	{
 		return $this->belongsToMany('Server');
 	}
+
+	public static function validate($input)
+	{
+		
+		$rules = array(
+					'name'=>'required',
+					'hostname'=>'required',
+					);
+		
+		$v = Validator::make($input, $rules);	
+
+		return $v;
+	}
+
 }

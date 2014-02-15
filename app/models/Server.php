@@ -57,6 +57,7 @@ class Server extends Eloquent{
 	 */
 	public function scopeCurrent($query)
 	{
+		
 		return $query->whereIp( Config::get('app.ip') )->first();
 	}
 

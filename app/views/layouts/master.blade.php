@@ -36,6 +36,7 @@
       <ul class="nav navbar-nav">
         <li><a href="{{ url('/') }}"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="{{ url('/servers') }}"><i class="fa fa-cloud"></i> Servidores</a></li>
+        <li><a href="{{ url('clientss') }}"><i class="fa fa-user"></i> Clients</a></li>
         <li><a href="{{ url('/notificationss') }}"><i class="fa fa-bell-o"></i> Notifications</a></li>
       </ul>
 
