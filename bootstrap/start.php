@@ -29,7 +29,7 @@ $app = new Illuminate\Foundation\Application;
 $env = $app->detectEnvironment(array(
 
 	'local' => array('your-machine-name'),
-    'mammut' => array('dev.dnsmonitor.io'),
+    'mammut' => array('Irken-Base.local'),
 
 ));
 

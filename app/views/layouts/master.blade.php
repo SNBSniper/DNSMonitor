@@ -55,12 +55,9 @@
   	@yield('content')
   </div>
     @section('js')
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://code.jquery.com/jquery.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js"></script>
-
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="js/bootstrap.min.js"></script>
+    {{ HTML::script('js/jquery.min.js') }}
+    {{ HTML::script('js/jquery-ui.min.js') }}
+    {{ HTML::script('js/bootstrap.min.js') }}
     
     @show
   </body>

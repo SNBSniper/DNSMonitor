@@ -34,4 +34,35 @@ class MasterServerController extends BaseController {
         ));
 	}
 
+    public function addClientToServer()
+    {
+        $server_id = Input::get('server_id');
+        $client_id = Input::get('client_id');
+        $status    = Input::get('status', 1);
+
+        $server = Server::find($server_id);
+
+        $server->clients()->attach($client_id, array('status' => $status));
+
+        return Response::json(array(
+            'error' => false,
+            'msg'   => "$client_id assigned to $server_id"
+        ));
+    }
+
+    public function removeClientFromServer()
+    {
+        $server_id = Input::get('server_id');
+        $client_id = Input::get('client_id');
+
+        $server = Server::find($server_id);
+
+        $server->clients()->detach($client_id);
+
+        return Response::json(array(
+            'error' => false,
+            'msg'   => "$client_id unassigned from $server_id"
+        ));
+    }
+
 }

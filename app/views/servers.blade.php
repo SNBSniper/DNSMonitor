@@ -3,9 +3,10 @@
 @section('content')
 
 <div class="row">
-{{HTML::link('create-server', 'Create Server', array('class'=>'btn btn-primary'))}}
+    {{HTML::link('create-server', 'Create Server', array('class'=>'btn btn-primary'))}}
     <h1 class="page-header">Servers </h1> 
 
+    <div id="alert-box"></div>
     @foreach ($servers as $server)
     <div class="col-xs-12 col-sm-6 col-lg-4">
         <div class="box">                           
@@ -20,11 +21,15 @@
                         Refresh Rate: <span id="refresh-rate-{{ $server->id }}">{{ $server->refresh_rate }}</span> min
                     </p>
                     @endif
-                    @foreach ($server->clients as $client)
-                    <ul class="list-group">
-                        <li class="list-group-item">{{ $client->name }} § {{ $client->hostname }}</li>
-                    </ul>
-                    @endforeach
+                    <div class="server-clients" data-server-id="{{ $server->id }}">
+                        @foreach ($server->clients as $client)
+                        <ul class="list-group">
+                            <li class="list-group-item" data-client-id="{{ $client->id }}">{{ $client->name }} § {{ $client->hostname }}
+                            <a href="#" class="remove-client pull-right"><i class="fa fa-times"></i></a>
+                            </li>
+                        </ul>
+                        @endforeach
+                    </div>
                     @if ( $server->type != 'master')
                     <div class="btn-group">
                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -45,6 +50,26 @@
     @endforeach
 </div>
 
+@if ($server->type != 'master')
+<div class="clients-container">
+    <a href="#" class="btn btn-success" id="toggle-clients">
+        <i class="fa fa-users"></i> Clients
+    </a>
+    <div class="clients">
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-search"></i></span>
+          <input type="text" class="form-control input-sm" placeholder="Filter&hellip;" id="clients-filter">
+        </div>
+        <br>
+
+        @foreach ($clients as $client)
+        <ul class="list-group tooltipp" data-toggle="tooltip" data-placement="top" title="Drag me to a server so it monitors me">
+            <li class="list-group-item" data-client-id="{{ $client->id }}">{{ $client->name }} § {{ $client->hostname }}</li>
+        </ul>
+        @endforeach
+    </div>
+</div>
+
 <div class="modal fade" id="change-refresh-rate">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -62,8 +87,7 @@
                             </div>
                         </div>
                     </div>
-                        
-                        <input type="hidden" name="server_id" id="server_id" value="0">
+                    <input type="hidden" name="server_id" id="server_id" value="0">
                     <br>
             </div>
             <div class="modal-footer">
@@ -74,6 +98,8 @@
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+@endif
+
 @stop
 
 @section('css')
@@ -96,19 +122,26 @@
     .box > .icon > .info > .more a { font-family: "Roboto",sans-serif !important; font-size: 12px; color: #222; line-height: 12px; text-transform: uppercase; text-decoration: none; }
     /*.box > .icon:hover > .info > .more > a { color: #fff; padding: 6px 8px; background-color: #63B76C; }*/
     .box .space { height: 30px; }
-</style>
-@stop
 
-@section('css')
-@parent
-<style>
     .list-group{ margin-bottom: 5px; font-size: 12px;}
     .list-group-item { padding: 2px 15px; }
+
+
+    /* Clients List */
+    #toggle-clients { position: absolute; left: 253px; top: 27px; -webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg); }
+    .clients-container { position: fixed; top: 80px; left: -280px; width: 280px; z-index: 2; }
+    .clients { background: #f3f3f3; border: 1px solid #e0e0e0; padding: 20px; text-align: center; max-height: 400px; overflow: scroll; }
+    .clients-hover { left: 0; }
+    .clients ul { cursor: move; }
+    .server-clients { padding: 6px; min-height: 30px; margin-bottom: 10px; }
+    .ui-state-hover { background: yellow; }
+    .ui-state-default { background: lightblue; }
 </style>
 @stop
 
 @section('js')
 @parent
+
 <script>
 $(function(){
     $('.tooltipp').tooltip();
@@ -135,6 +168,95 @@ $(function(){
         });
         return false;
     });
+    $('#clients-filter').keyup(function(){
+       var valThis = $(this).val();
+        $('.clients > ul > li').each(function(){
+         var text = $(this).text().toLowerCase();
+            (text.indexOf(valThis) == 0) ? $(this).show() : $(this).hide();         
+       });
+    });
+
+    $('.clients > ul > li').draggable({
+        cursor: "move",
+        cursorAt: { top: 8, left: 10 },
+        helper: function( event ) {
+            return $( "<ul class='list-gruop'><li class='list-group-item'>"+ $(this).html() +"</li></ul>" );
+        },
+        appendTo: 'body'
+    });
+    $('.server-clients').droppable({
+        activeClass: "ui-state-default",
+        hoverClass: "ui-state-hover",
+        drop: function( event, ui ) {
+            var $this = $(this);
+            var exists = $this.find("[data-client-id='" + ui.draggable.data('client-id') + "']").length != 0;
+
+            if ( ! exists) {
+
+                $this.append('<li class="list-group-item" id="loading"><i class="fa fa-spinner fa-spin"></i></li>');
+
+                $.ajax({
+                    type: "POST",
+                    url: 'http://dev.dnsmonitor.io/api/v1/clients',
+                    data: {"client_id" : ui.draggable.data('client-id'), "server_id" : $this.data("server-id") },
+                    dataType: "text",
+                    success: function(data) {
+                        console.log(data); // show response from the php script.
+                        $('#loading').remove();
+                        $('<ul class="list-group"></ul>').append(
+                            $( '<li class="list-group-item" data-client-id="'+ui.draggable.data('client-id')+'"></li>' ).text(  ui.draggable.text() ).append(
+                                '<a href="#" class="remove-client pull-right"><i class="fa fa-times"></i></a>'
+                            )
+                        ).appendTo( $this );
+                    },
+                    error: function(request, status, error) {
+                        $('#loading').remove();
+                        generate_alert(error, 'danger');
+                    }
+                });
+            }
+            
+        }
+    });
+    
+    $(document).on('click', '.remove-client',  function(e){
+        e.preventDefault();
+        var $this = $(this);
+        var client_id = $this.closest('li.list-group-item').data('client-id');
+        var server_id = $this.closest('.server-clients').data('server-id');
+
+        $this.closest('li.list-group-item').hide();
+        $this.closest('ul.list-group').append('<li class="list-group-item" id="loading"><i class="fa fa-spinner fa-spin"></i></li>');
+
+        $.ajax({
+            type: "DELETE",
+            url: 'http://dev.dnsmonitor.io/api/v1/clients',
+            data: {"client_id" : client_id, "server_id" : server_id },
+            dataType: "text",
+            success: function(data) {
+                console.log(data); // show response from the php script.
+                $this.closest('ul.list-group').remove();
+            },
+            error: function(request, status, error) {
+                $('#loading').remove();
+                $this.closest('li.list-group-item').show();
+                generate_alert(error, 'danger');
+            }
+        });
+    });
+
+    $("#toggle-clients").on('click', function(e){
+        $('.clients-container').stop(true,true).toggleClass( "clients-hover", 1000, "easeOutExpo" );
+        e.preventDefault();
+    });
+
+    var generate_alert =  function (msg, type) {
+        var alert  = '<div class="alert alert-'+ type +' alert-dismissable">';
+            alert += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+            alert += msg + '</div>';
+
+        $(alert).appendTo('#alert-box');
+    }
 });
 </script>
 @stop

@@ -33,7 +33,8 @@ Route::get('create-client', function(){
 Route::get('servers',function(){
     $servers = Server::nonDns()->get();
     
-    return View::make('servers')->with('servers',$servers);
+    return View::make('servers')->with('servers',$servers)
+        ->with('clients', Client::all());
 });
 
 Route::get('create-server', function(){
@@ -629,6 +630,8 @@ Route::get('monitor-mock', function(){
  */
 Route::group(array('prefix' => 'api/v1'), function() {
     Route::post('change-refresh-rate', 'MasterServerController@changeRefreshRate');
+    Route::post('clients', 'MasterServerController@addClientToServer');
+    Route::delete('clients', 'MasterServerController@removeClientFromServer');
 });
 
 /**
