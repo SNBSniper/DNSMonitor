@@ -3,7 +3,9 @@
 @section('content')
 
 <div class="row">
-    {{HTML::link('create-server', 'Create Server', array('class'=>'btn btn-primary'))}}
+    @if ($current_server->type == 'master')
+        {{HTML::link('create-server', 'Create Server', array('class'=>'btn btn-primary'))}}
+    @endif
     <h1 class="page-header">Servers </h1> 
 
     <div id="alert-box"></div>
@@ -25,12 +27,14 @@
                         @foreach ($server->clients as $client)
                         <ul class="list-group">
                             <li class="list-group-item" data-client-id="{{ $client->id }}">{{ $client->name }} § {{ $client->hostname }}
-                            <a href="#" class="remove-client pull-right"><i class="fa fa-times"></i></a>
+                            @if ($current_server->type == 'master')
+                                <a href="#" class="remove-client pull-right"><i class="fa fa-times"></i></a>
+                            @endif
                             </li>
                         </ul>
                         @endforeach
                     </div>
-                    @if ( $server->type != 'master')
+                    @if ( $current_server->type == 'master')
                     <div class="btn-group">
                       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
                         <i class="fa fa-cog"></i> <span class="caret"></span>
@@ -50,7 +54,7 @@
     @endforeach
 </div>
 
-@if ($server->type != 'master')
+@if ($current_server->type == 'master')
 <div class="clients-container">
     <a href="#" class="btn btn-success" id="toggle-clients">
         <i class="fa fa-users"></i> Clients
@@ -143,8 +147,15 @@
 @parent
 
 <script>
+    $(function(){
+        $('.tooltipp').tooltip();
+    });
+</script>
+@if($current_server->type == 'master')
+<script>
 $(function(){
-    $('.tooltipp').tooltip();
+    var api_url = '<?php echo url('api/v1/clients'); ?>';
+    
     $('.launch-modal').on('click', function(e){
         var $this = $(this);
         e.preventDefault();
@@ -153,6 +164,7 @@ $(function(){
         $('#refresh_rate').val($('#refresh-rate-'+$this.data('server-id')).html());
         
     });
+
     $('#change-refresh-rate-form').submit(function(e){
         var url = $(this).attr('action');
 
@@ -168,6 +180,7 @@ $(function(){
         });
         return false;
     });
+
     $('#clients-filter').keyup(function(){
        var valThis = $(this).val();
         $('.clients > ul > li').each(function(){
@@ -197,7 +210,7 @@ $(function(){
 
                 $.ajax({
                     type: "POST",
-                    url: 'http://dev.dnsmonitor.io/api/v1/clients',
+                    url: api_url,
                     data: {"client_id" : ui.draggable.data('client-id'), "server_id" : $this.data("server-id") },
                     dataType: "text",
                     success: function(data) {
@@ -230,7 +243,7 @@ $(function(){
 
         $.ajax({
             type: "DELETE",
-            url: 'http://dev.dnsmonitor.io/api/v1/clients',
+            url: api_url,
             data: {"client_id" : client_id, "server_id" : server_id },
             dataType: "text",
             success: function(data) {
@@ -259,4 +272,5 @@ $(function(){
     }
 });
 </script>
+@endif
 @stop

@@ -8,6 +8,7 @@
     @section('css')
     <link href="css/bootstrap.min.css" rel="stylesheet">
     {{ HTML::style('packages/font-awesome/css/font-awesome.min.css') }}
+    {{ HTML::style('style.css') }}
     <link rel="shortcut icon" href="favicon.ico" />
     @show
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -41,12 +42,19 @@
       </ul>
 
 
-      <?php $init = Application::where('started', '=', 1)->first();
-      
-       ?>
-       @if (is_null($init))
+       @if (is_null($application_started))
         <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn pull-right"><i class="fa fa-cog"></i> Initialize Server</a>
        @endif
+
+        <ul class="nav navbar-nav navbar-right">
+            <li id="fat-menu" class="dropdown">
+              <a href="#" id="server-info" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-info"></i> Master Server Info <b class="caret"></b></a>
+              <div class="dropdown-menu" role="menu" aria-labelledby="server-info" id="server-infoo">
+                <b>Name:</b> {{ $master_server->provider }} <br>
+                <b>IP:</b> {{ $master_server->ip }}
+              </div>
+            </li>
+          </ul>
       
     </div><!-- /.navbar-collapse -->
     </div>

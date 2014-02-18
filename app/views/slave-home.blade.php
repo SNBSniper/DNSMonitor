@@ -30,21 +30,6 @@
              </div>
          </div>
      </div>
-     <div class="col-sm-6">
-         <div class="panel panel-default">
-             <div class="panel-heading">
-                 <h3 class="panel-title"><i class="fa fa-desktop"></i> DNS Servers ({{count($dns_servers)}})</h3>
-             </div>
-             <div class="panel-body panel-scroll">
-               <ul class="list-unstyled">
-                 <li><i class="fa fa-times red"></i> UTFSM : 0.0.6.66</li>
-                 @foreach ($dns_servers as $dns)
-                     <li><i class="fa fa-check green"></i> {{ $dns->provider }} : {{ $dns->ip }}</li>
-                 @endforeach    
-                 </ul>
-             </div>
-         </div>
-     </div>
  </div>
  <div class="row">
      <div class="col-sm-12">
@@ -63,6 +48,8 @@
          </div>
      </div>
  </div>
+
+
 
 @stop
 

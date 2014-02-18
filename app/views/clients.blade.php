@@ -2,12 +2,13 @@
 
 @section('content')
 
+	@if ($current_server->type == 'master')
 	<div class="row padding">
 		<div class="col-sm-6">
 			{{HTML::link('create-client', 'Agregar Cliente', array('class'=>'btn btn-primary'))}}		
 		</div>
-		
 	</div>
+	@endif
 
 	<br>
 

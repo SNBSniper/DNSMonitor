@@ -1,9 +1,17 @@
 <?php
 
+View::composer('*', function($view){
+    $view->with('current_server', Server::current())
+         ->with('master_server', Server::master())
+         ->with('application_started', Application::where('started', '=', 1)->first());
+});
+
+
 Route::get('clientss',function(){
     $clients = Client::all();
     
-    return View::make('clients')->with('clients',$clients);
+    return View::make('clients')
+        ->with('clients',$clients);
 });
 
 Route::post('create-client', function(){
@@ -31,10 +39,11 @@ Route::get('create-client', function(){
 });
 
 Route::get('servers',function(){
-    $servers = Server::nonDns()->get();
+    $servers = Server::slave()->get();
     
     return View::make('servers')->with('servers',$servers)
-        ->with('clients', Client::all());
+        ->with('clients', Client::all())
+        ->with('current_server', Server::current());
 });
 
 Route::get('create-server', function(){
@@ -73,11 +82,10 @@ Route::post('init-server', function(){
 
 Route::get('/', function()
 {
-    
     $currentServer = Server::current();
-    if ($currentServer->first() != null) {
+
+    if ($currentServer != null) {
         $clients_monitored = $currentServer->clients;
-        
 
         // select ip, client_id from ips where ip IS NOT NULL group by ip;
         $ips = DB::table('ips')->select('ip','name')->whereNotNull('ip')->join('clients','clients.id','=','ips.client_id')->groupBy('ip')->orderBy('name','asc')->get();
@@ -85,17 +93,13 @@ Route::get('/', function()
         if( $currentServer->type == 'master' )
             return View::make('home')
                 ->with('clients', Client::all())
-                ->with('servers', Server::all())
                 ->with('dns_servers', Server::dns()->get())
-                ->with('server', Server::current())
                 ->with('ips', $ips);
 
-        return View::make('home')->with(array('ips'=>$ips, 'server'=>$currentServer, 'clients'=>$clients_monitored));
+        return View::make('slave-home')->with(array('ips'=>$ips, 'clients'=>$clients_monitored));
     }
-    else
-        return View::make('home');
-    
-    
+
+    return App::abort(403, "This IP is not in our system");
 });
 
 Route::get('notificationss', function(){
