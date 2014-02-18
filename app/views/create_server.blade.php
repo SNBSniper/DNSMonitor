@@ -24,32 +24,21 @@
     <div id="collapseOne" class="panel-collapse collapse in">
       <div class="panel-body">
         {{Form::open(array('url'=>'init-server','method'=>"POST", 'role'=>'form'))}}
-            
+          <div class="form-group">
+              <label for="ip-master"> IP Address</label>
+              {{ Form::input('text', 'ip', $ip, array('class' => 'form-control')) }}
+          </div>
+          <div class="form-group">
+              <label for="provider">Provider</label>
+              {{Form::input('text', 'provider', '', array('class'=>'form-control','placeholder'=>'Proveedor'))}}
+          </div>
 
-        <div class="form-group">
-            <label for="ip-master"> IP Address</label>
-            @if (isset($ip))
-                {{Form::input('text', 'ip', $ip, array('class'=>'form-control'))}}
-            @else
-                {{Form::input('text', 'ip', '', array('class'=>'form-control','placeholder'=>'192.168.100.1'))}}
-            @endif
-        </div>
-        <div class="form-group">
-            <label for="provider">Provider</label>
-            {{Form::input('text', 'provider', '', array('class'=>'form-control','placeholder'=>'Proveedor'))}}
-        </div>
-
-        <div class="form-group">
-            <label for="provider">Server Type</label>
-            {{Form::select('type', array('master'=>'Master Server','slave'=>'Slave Master', 'dns' => 'DNS Server'), 'slave', array('class'=>'form-control'))}}
-        </div>
-
-        
-
-
-            
-            
-        {{Form::submit('Submit', array('class'=>'btn btn-default'))}}
+          <div class="form-group">
+              <label for="provider">Server Type</label>
+              {{Form::select('type', array('master'=>'Master Server','slave'=>'Slave Master', 'dns' => 'DNS Server'), 'slave', array('class'=>'form-control'))}}
+          </div>
+              
+          {{Form::submit('Submit', array('class'=>'btn btn-default'))}}
         {{Form::close()}}
       </div>
     </div>

@@ -6,7 +6,6 @@ View::composer('*', function($view){
          ->with('application_started', Application::where('started', '=', 1)->first());
 });
 
-
 Route::get('clientss',function(){
     $clients = Client::all();
     
@@ -26,36 +25,27 @@ Route::post('create-client', function(){
         });
 
         return Redirect::to('create-client')->with('success','Client Created Succesfully');
-
     }
-    else
-    {
-        return Redirect::to('create-client')->with('fail', $validation->messages);
-    }
+    return Redirect::to('create-client')->with('fail', $validation->messages);
 });
 
 Route::get('create-client', function(){
+
     return View::make('create_client');
 });
 
 Route::get('servers',function(){
     $servers = Server::slave()->get();
     
-    return View::make('servers')->with('servers',$servers)
+    return View::make('servers')
+        ->with('servers',$servers)
         ->with('clients', Client::all())
         ->with('current_server', Server::current());
 });
 
-Route::get('create-server', function(){
-
-    $ip = file_get_contents("http://wtfismyip.com/text");
-    if (!is_null($ip) && !(strlen($ip) <= 1 ) ) {
-        return View::make('create_server')->with('ip',$ip);
-    }
-    else
-        return View::make('create_server');
-
-    
+Route::get('create-server', function() {
+    $ip = Config::get('app.ip');
+    return View::make('create_server')->with('ip', $ip);
 });
 
 Route::post('init-server', function(){
@@ -79,9 +69,7 @@ Route::post('init-server', function(){
         return Redirect::to('create-server')->with('fail', $validation->messages);
 });
 
-
-Route::get('/', function()
-{
+Route::get('/', function() {
     $currentServer = Server::current();
 
     if ($currentServer != null) {
@@ -102,9 +90,9 @@ Route::get('/', function()
     return App::abort(403, "This IP is not in our system");
 });
 
-Route::get('notificationss', function(){
+Route::get('notifications', function(){
     return View::make('notificationss')
-        ->with('notifications', Notification::orderBy('id', 'DESC')->get());
+        ->with('notifications', Notification::with(array('notification_server'))->orderBy('id', 'DESC')->paginate(20));
 });
 
 Route::get('start',function(){
@@ -197,170 +185,22 @@ Route::get('init', function(){
     $is_master = false;
     $ip = trim(file_get_contents("http://wtfismyip.com/text"));
     
-    if (!is_null($master_server->first())) {
+    if ( ! is_null($master_server->first())) {
         if ($master_server->first()->ip == $ip) {
             $is_master = true;
         }
     }
-
 
     if (count($master_server->get()) != 1) {
         return View::make('init_1')->with('message','There can only be one Master Server');
     }
     else if (count($slave_servers) <=  0)
         return View::make('init_1')->with('message','There must be at least one Slave Server');
-    else
-        return View::make('init_1')->with('success', 'Server May be Initialized' )
-                                    ->with('master_server', $master_server->first())
-                                    ->with('slave_servers', $slave_servers)
-                                    ->with('is_master', $is_master);
-    
-    
-    
-    
 
-
-
-
-
-
-
-    $slave_server = Server::current();
-    
-    /*$urls = $slave_server->urls()->get();
-
-    foreach ($urls as $url) {
-        $exists = urlExists($url->link);
-        $url->link_status = $exists;
-        $url->save();
-    }*/
-
-    $dns_servers = Server::dns()->get();
-
-    $clients_monitored = get_server_clients($slave_server);
-
-    if (!is_null($clients_monitored)) {
-
-        foreach ($clients_monitored as $client) {
-
-            foreach ($dns_servers as $dns_server) {
-
-                $hostName = $client->hostname;
-                $result = `nslookup $hostName $dns_server->ip` ;
-                $result = trim($result);
-                $result = strtolower($result);
-                preg_match('/address: (.*)/', $result, $matches);
-                
-                if ( array_key_exists(1, $matches) ) // if an nslookup returns a value then validate it
-                {
-                    $input =  array( 'ip' => $matches[1]);
-
-                    
-                    $validation = Ip::validate($input);
-                    
-                    if ($validation->passes()) { // if it passes validation then insert it
-                        
-                        $row = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
-                        
-                        if (is_null($row)) { //check to see if the client_server row exists, if it doesn't create it, if it does then attach it
-
-                            DB::transaction(function() use ($client,$dns_server,$input)
-                            {
-                                $date = new \DateTime;
-
-                                $client->servers()->attach($dns_server->id, array('status'=>1,'created_at'=>$date, 'updated_at'=>$date));         
-                                $row = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
-
-                                $ip = new Ip(array('ip'=>$input['ip'], 'client_id'=>$client->id,'client_server_id'=>$row->id));
-                                $ip->save();
-
-                            });
-
-                        }
-                        else{
-                            // There should be none created since this is an initialization, only the if above should be going in.
-                        }
-                    }
-                    else{
-                        dd($validation->messages()->get());
-                    }
-                    
-                }
-                else // nslookup failed so we add status=0 to the client_server row to note that the server failed the lookup.
-                {
-                    DB::transaction(function() use ($client,$dns_server,$input)
-                    {
-                        $client->servers()->attach($dns_server->id, array('status'=>0));         
-                    });
-
-
-                }
-
-            }
-
-            
-        }
-
-
-    }
-    else
-    {
-        return "Server is not assigned Clients to monitor";
-    }
-
-});
-
-Route::post('init-master', function(){
-    
-
-    $input =  array( 'ip' => Input::get('ip'));
-    dd($input);
-    
-    $validation = Ip::validate($input);
-
-    
-    if ($validation->passes()) { // if it passes validation then insert it
-        DB::transaction(function() use ($input)
-        {
-            $date = new \DateTime;
-            //$server = new Server(array());
-            $client->servers()->attach($dns_server->id, array('status'=>1,'created_at'=>$date, 'updated_at'=>$date));         
-            $row = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
-
-            $ip = new Ip(array('ip'=>$input['ip'], 'client_id'=>$client->id,'client_server_id'=>$row->id));
-            $ip->save();
-
-        });
-    }
-    
-
-
-});
-
-Route::post('init-slave', function(){
-
-});
-
-Route::get('get_clients',function(){
-    $server_id = Input::get('server_id');
-
-    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$server_id)->get();
-    
-    $result = array();
-
-    foreach ($clients_id as $key => $value) {
-        
-        // explode the sub-array, and add the parts
-        array_push($result, $value->client_id);
-        
-    }
-
-    
-    
-    return json_encode($result);
-
-
-    
+    return View::make('init_1')->with('success', 'Server May be Initialized' )
+                               ->with('master_server', $master_server->first()) //Del this line!
+                               ->with('slave_servers', $slave_servers)
+                               ->with('is_master', $is_master);
 });
 
 Route::get('monitor', function(){
@@ -498,135 +338,40 @@ Route::get('monitor', function(){
     }
     
     return View::make('monitor');
-
-
-});
-
-Route::get('notifications',function(){
-
-    //verify that get parameters client_server_id and ip exist!
-    $slave_server = Server::find(Input::get('slave_server_id'));
-    
-    $input['ip'] = Input::get('ip');
-    //dd(array('1'=>$slave_server, '2'=>$input));
-
-    $notification_status = 0;
-    if (!is_null($slave_server) && !is_null($input['ip'])) {
-        DB::transaction(function() use ($slave_server, $input, &$notification_status)
-        {
-            //$notification = Notification::where('client_id','=',$slave_server->client_id)->first();
-
-            /*$date = new DateTime;
-
-            
-            $from = new DateTime;
-            
-            $to = new DateTime;
-            date_add($to, date_interval_create_from_date_string('30 min'));
-            date_sub($from, date_interval_create_from_date_string('30 min'));
-
-
-            $notification = Notification::whereBetween('created_at', array($from, $to))->where('client_id','=',$slave_server->client_id)->first();   */
-            $notification = Notification::where('new_ip', '=', $input['ip'])->first();
-            
-            if (is_null($notification)) {
-                
-                    
-                $timestamp = new DateTime();
-                $date = $timestamp->format('Y-m-d H:i:s');
-                
-                $notification = new Notification(array(
-                                'new_ip'=>$input['ip'],
-                                'client_id'=>$slave_server->id,
-                                'created_at' => $date,
-                                'updated_at' => $date
-                                
-                            ));
-                $notification->save();
-                
-                $notification->notification_server()->attach($slave_server->id, array('created_at' => $date,'updated_at' => $date));
-                $notification_status=1;
-                
-            }
-            else
-            {
-                $row = DB::table('notification_server')->where('server_id','=',$slave_server->id)->where('notification_id','=',$notification->id)->first();
-                $timestamp = new DateTime();
-                $date = $timestamp->format('Y-m-d H:i:s');
-
-                if (is_null($row)) {
-                    $notification->notification_server()->attach($slave_server->id, array('created_at' => $date,'updated_at' => $date));    
-                    $notification_status = 1;
-                }
-                else{
-                    $notifications_status = 2;
-                }
-                
-
-            }
-            
-            
-        });
-    
-    }
-
-    return Response::json(array('status'=>$notification_status));
-    
-    
-
-});
-
-Route::get('master', function(){
-  
-    $master_server = Server::where('type','=','master')->first();
-    $response = array();
-    $response['ip']=$master_server->ip;
-    return Response::json($response);
-
-
-/*    $notifications = Notification::all();
-    foreach ($notifications as $notification) {
-
-        $ip = Ip::where('ip','=',$notification->old_ip)->first();
-        $client = Client::find($ip->client_id);
-
-
-    }*/
-});
-
-Route::get('slave_sync', function(){
-    $results = array();
-
-    $slave_ip = gethostbyname($_SERVER['REMOTE_ADDR']);
-
-    $slave_ip = '10.1.10.149'; //developinggg
-    $slave_server = Server::where('ip','=',$slave_ip)->first();
-
-    $dns_servers = Server::where('type','=','dns')->select(array('id','ip'))->get();
-    $results['dns_servers'] = $dns_servers->toArray();
-
-    $clients_monitored = get_server_clients($slave_server);
-    $results['clients_monitored'] = $clients_monitored->toArray();
-
-    return Response::json($results);
-});
-
-Route::get('clients', function(){
-    $server_id = Input::get('server_id');
-
-    $clients_id = DB::table('client_server')->select('client_id')->where('server_id','=',$server_id)->lists('client_id');
-
-    return Response::json($clients_id);
 });
 
 Route::get('monitor-mock', function(){
     Log::info('The server started monitoring');
-    $not = new Notification;
-    $not->new_ip = '0.0.0.0';
-    $not->client_id = 3;
-    $not->save();
+    // Monitor Proccess here ...
     Log::info('The server finished monitoring');
-    return Response::json(array('notifications' => true ));
+
+        // Case where new IP is detected
+        $client_id       = mt_rand(1,3);
+        $slave_server_id = mt_rand(1,3);
+        $new_ip          = random_ip();
+        
+        // Send Notification to master server
+        $response = Server::master()->notify($slave_server_id, $client_id, $new_ip);
+
+        // Review the response given by the server
+        if ($response == -1) {
+            Log::error("The master server couldn't be notified");
+            return Response::json(array('error' => true, 'msg' => "The master server couldn't be notified"));
+        }else if ($response == 0) {
+            Log::error("One or more required parameters (slave_server_id, client_id or new_ip) was missing or illegal");
+            return Response::json(array('error' => true, 'msg' => "One or more required parameters (slave_server_id, client_id or new_ip) was missing or illegal"));
+        }else if ($response == 2) {
+            Log::error("The notification was already sent by this server");
+            return Response::json(array('error' => true, 'msg' => "The notification was already sent by this server"));
+        }else if ($response == 3) {
+            Log::info("Notification already sent by pair slave server. Master server notified again");
+            return Response::json(array('error' => false, 'msg' => "Notification already sent by pair slave server. Master server notified again"));
+        }else if ($response == 1) {
+            Log::info("The notification was sent successfully to the master server");
+            return Response::json(array('error' => false, 'msg' => "The notification was sent successfully to the master server"));
+        }
+
+    return Response::json(array('error' => true, 'msg' => 'No changes found by this server'));
 });
 
 /**
@@ -634,6 +379,7 @@ Route::get('monitor-mock', function(){
  */
 Route::group(array('prefix' => 'api/v1'), function() {
     Route::post('change-refresh-rate', 'MasterServerController@changeRefreshRate');
+    Route::post('notify', 'MasterServerController@addNotification');
     Route::post('clients', 'MasterServerController@addClientToServer');
     Route::delete('clients', 'MasterServerController@removeClientFromServer');
 });

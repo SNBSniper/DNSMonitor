@@ -6,7 +6,7 @@
     <h1 class="page-header"><i class="fa fa-bell-o"></i> Notifications</h1>
     <ul class="timeline">
     @foreach($notifications as $i => $notification)
-        <li{{ ($i % 2 == 1) ? ' class="timeline-inverted"' : '' }}>
+        <li{{ ($i % 2 == count($notifications)%2) ? ' class="timeline-inverted"' : '' }}>
           <div class="timeline-badge info"><i class="fa fa-refresh"></i></div>
           <div class="timeline-panel">
             <div class="timeline-heading">
@@ -18,13 +18,17 @@
                 A new IP has been noticed for the client <b>{{$notification->client->name}}<sup>{{ $notification->client->id}}</sup>.</b>
                 </p>
                 <p>
-                New IP: <b>{{ $notification->new_ip }}</b>
+                New IP: <b>{{ $notification->new_ip }}</b> <br>
+                @foreach ($notification->notification_server as $server)
+                Found by: {{ $server->provider }} <sup>{{ $server->id }}</sup> § {{ $server->ip }} <br>
+                @endforeach
                 </p>
             </div>
           </div>
         </li>
     @endforeach
 </div>
+<div class="center">{{ $notifications->links() }}</div>  
 @stop
 
 @section('css')

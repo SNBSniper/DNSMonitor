@@ -1,5 +1,7 @@
 <?php
 
+use jyggen\Curl;
+
 class Server extends Eloquent{
 
 	protected $guarded = array();
@@ -81,5 +83,23 @@ class Server extends Eloquent{
 		$v = Validator::make($input, $rules);	
 
 		return $v;
+	}
+
+	/**
+	 * 
+	 */
+	public function notify($slave_server_id, $client_id, $new_ip)
+	{
+		$response = Curl::post( Server::master()->ip . '/api/v1/notify', array(
+			'slave_server_id' => $slave_server_id,
+			'client_id'       => $client_id,
+			'new_ip'          => $new_ip
+		));
+
+		if (count($response) != 1)
+			return -1; // The request was not done
+
+		$response = json_decode($response[0]->getContent());
+		return $response->status;
 	}
 }

@@ -38,24 +38,25 @@
         <li><a href="{{ url('/') }}"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="{{ url('/servers') }}"><i class="fa fa-cloud"></i> Servidores</a></li>
         <li><a href="{{ url('clientss') }}"><i class="fa fa-user"></i> Clients</a></li>
-        <li><a href="{{ url('/notificationss') }}"><i class="fa fa-bell-o"></i> Notifications</a></li>
+        <li><a href="{{ url('/notifications') }}"><i class="fa fa-bell-o"></i> Notifications</a></li>
       </ul>
 
+      <ul class="nav navbar-nav navbar-right">
+        <li id="server-info" class="dropdown">
+          <a href="#" id="server-info" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-info"></i> Master Server Info <b class="caret"></b></a>
+          <div class="dropdown-menu" role="menu" aria-labelledby="server-info" id="server-infoo">
+            <b>Name:</b> {{ $master_server->provider }} <br>
+            <b>IP:</b> {{ $master_server->ip }}
+          </div>
+        </li>
+      </ul>
 
-       @if (is_null($application_started))
-        <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn pull-right"><i class="fa fa-cog"></i> Initialize Server</a>
-       @endif
+      <div class="navbar-right">
+        @if (is_null($application_started))
+          <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn"><i class="fa fa-cog"></i> Initialize Server</a>
+        @endif
+      </div>
 
-        <ul class="nav navbar-nav navbar-right">
-            <li id="fat-menu" class="dropdown">
-              <a href="#" id="server-info" role="button" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-info"></i> Master Server Info <b class="caret"></b></a>
-              <div class="dropdown-menu" role="menu" aria-labelledby="server-info" id="server-infoo">
-                <b>Name:</b> {{ $master_server->provider }} <br>
-                <b>IP:</b> {{ $master_server->ip }}
-              </div>
-            </li>
-          </ul>
-      
     </div><!-- /.navbar-collapse -->
     </div>
   </nav>

@@ -65,4 +65,48 @@ class MasterServerController extends BaseController {
         ));
     }
 
+    public function addNotification()
+    {
+        $client       = Server::find(Input::get('client_id'));
+        $slave_server = Server::find(Input::get('slave_server_id'));
+        $new_ip       = Input::get('new_ip');
+
+        $notification_status = 0;
+
+        if ( ! is_null($slave_server) && ! is_null($new_ip) && ! is_null($client)) {
+            DB::transaction(function() use ($slave_server, $client, $new_ip, &$notification_status)
+            {
+                $notification = Notification::where('new_ip', '=', $new_ip)->first();
+                
+                if (is_null($notification)) {
+                    // Create the new notification
+                    $notification = new Notification(array(
+                        'new_ip'     => $new_ip,
+                        'client_id'  => $client->id,
+                        'created_at' => new DateTime,
+                        'updated_at' => new DateTime
+                    ));
+                    $notification->save();
+                    
+                    $notification->notification_server()->attach($slave_server->id);
+                    $notification_status = 1;
+                    Event::fire('notification.new.email', array($client->id));
+                }else {
+                    // Append the notification only. 
+                    $already_notified = DB::table('notification_server')->where('server_id','=',$slave_server->id)->where('notification_id','=',$notification->id)->first();
+                   
+                    if (is_null($already_notified)) {
+                        $notification->notification_server()->attach($slave_server->id);
+                        $notification_status = 3;
+                        Event::fire('notification.new.email', array($client->id));
+                    }else {
+                        $notifications_status = 2;
+                    }
+                }
+            });
+        }
+
+        return Response::json(array('status' => $notification_status));
+    }
+
 }

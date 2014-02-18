@@ -17,6 +17,11 @@ function urlExists($url=NULL)
     }  
 }
 
+function random_ip()
+{
+    return mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255).".".mt_rand(0,255);
+}
+
 function get_fcontent( $url,  $javascript_loop = 0, $timeout = 5 ) {
     $url = str_replace( "&amp;", "&", urldecode(trim($url)) );
 
