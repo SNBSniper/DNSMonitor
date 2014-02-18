@@ -13,16 +13,15 @@
     <div class="col-xs-12 col-sm-6 col-lg-4">
         <div class="box">                           
             <div class="icon">
-                <div class="image {{ $server->type }}"><i class="fa fa-desktop"></i></div>
+                <div class="image status waiting" data-server-ip="{{ $server->ip }}"><i class="fa fa-desktop"></i></div>
                 <div class="info">
                     <h3 class="title">{{$server->ip}}<br><small>{{ ucwords($server->type) }}</small></h3>
                     <h6>{{ $server->provider }}</h6>
                     
-                    @if ($server->type != 'master')
                     <p data-toggle="tooltip" data-placement="top" title="How often the server monitors DNS changes" class="tooltipp">
                         Refresh Rate: <span id="refresh-rate-{{ $server->id }}">{{ $server->refresh_rate }}</span> min
                     </p>
-                    @endif
+
                     <div class="server-clients" data-server-id="{{ $server->id }}">
                         @foreach ($server->clients as $client)
                         <ul class="list-group">
@@ -40,9 +39,10 @@
                         <i class="fa fa-cog"></i> <span class="caret"></span>
                       </button>
                       
-                      <ul class="dropdown-menu" role="menu">
+                      <ul class="dropdown-menu" role="menu" style="text-align: left;">
                         <li><a data-server-id="{{ $server->id }}" href="#" class="launch-modal"><i class="fa fa-refresh"></i> Change Monitor Rate</a></li>
-                        <li><a href="#"><i class="fa fa-bolt"></i> Send Monitor Signal</a></li>
+                        <li><a href="#" class="start-monitor" data-server-ip="{{ $server->ip }}"><i class="fa fa-bolt"></i> Start Monitor</a></li>
+                        <li><a href="#" class="stop-monitor" data-server-ip="{{ $server->ip }}"><i class="fa fa-minus-circle"></i> Stop Monitor</a></li>
                       </ul>
                     </div>
                     @endif
@@ -110,8 +110,10 @@
 @parent
 <style>
     .box > .icon { text-align: center; position: relative; }
-    .box > .icon > .master {  background: #3e7eb7; }
-    .box > .icon > .slave {  background: #63B76C; }
+    .box > .icon > .waiting {  background: #adadad; }
+    .box > .icon > .stopped {  background: #3e7eb7; }
+    .box > .icon > .running {  background: #63B76C; }
+    .box > .icon > .unreachable {  background: #df1916; }
     .box > .icon > .image { position: relative; z-index: 2; margin: auto; width: 88px; height: 88px; border: 8px solid white; line-height: 88px; border-radius: 50%; vertical-align: middle; }
     /*.box > .icon:hover > .image { background: #333; }*/
     .box > .icon > .image > i { font-size: 36px !important; color: #fff !important; }
@@ -141,6 +143,7 @@
     .ui-state-hover { background: yellow; }
     .ui-state-default { background: lightblue; }
 </style>
+
 @stop
 
 @section('js')
@@ -153,8 +156,55 @@
 </script>
 @if($current_server->type == 'master')
 <script>
-$(function(){
+$(document).ready(function(){
     var api_url = '<?php echo url('api/v1/clients'); ?>';
+
+     var getCronStatus = function(){
+        $('div.status').each(function(){
+            var $this = $(this);
+            $.ajax({
+                type: "GET",
+                url: "//" + $this.data('server-ip') + "/api/v2/cron/status",
+                crossDomain: true,
+                contentType: "application/javascript",
+                dataType: 'jsonp',
+                timeout: 5000,
+                success: function(data) {
+                    $this.removeClass('stopped');
+                    $this.removeClass('running');
+                    $this.addClass(data.status)
+                },
+                error: function(request, status, error) {
+                    $this.addClass('unreachable');
+                }
+            });
+        });
+    }
+
+    var sendCronSignal= function (to, action, callback) {
+        $.ajax({
+            type: "GET",
+            url: "//" + to + "/api/v2/cron/" + action,
+            crossDomain: true,
+            contentType: "application/javascript",
+            dataType: 'jsonp',
+            timeout: 5000,
+            success: function(data) {
+                callback(data, false);
+            },
+            error: function(request, status, error) {
+                callback(error, true);
+            }
+        });
+    }
+
+    var generate_alert =  function (msg, type) {
+        var alert  = '<div class="alert alert-'+ type +' alert-dismissable">';
+            alert += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
+            alert += msg + '</div>';
+
+        $(alert).appendTo('#alert-box');
+    }
     
     $('.launch-modal').on('click', function(e){
         var $this = $(this);
@@ -197,6 +247,7 @@ $(function(){
         },
         appendTo: 'body'
     });
+
     $('.server-clients').droppable({
         activeClass: "ui-state-default",
         hoverClass: "ui-state-hover",
@@ -263,13 +314,46 @@ $(function(){
         e.preventDefault();
     });
 
-    var generate_alert =  function (msg, type) {
-        var alert  = '<div class="alert alert-'+ type +' alert-dismissable">';
-            alert += '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';
-            alert += msg + '</div>';
+    $('.start-monitor').on('click', function(e) {
+        var $this = $(this);
+        e.preventDefault();
+        sendCronSignal($this.data('server-ip'), 'start', function(d, timeout){
+            if(timeout) {
+                generate_alert("The server "+ $this.data('server-ip') +" did not respond", "danger");
+                return;
+            }
+            generate_alert(d.msg, 'success');
+            var status = $this.closest('div.icon').children('.status');
+        
+            status.removeClass('stopped');
+            status.removeClass('unreachable');
+            status.addClass('running');
+        });
+        
+    });
 
-        $(alert).appendTo('#alert-box');
-    }
+    $('.stop-monitor').on('click', function(e) {
+        var $this = $(this);
+        e.preventDefault();
+        sendCronSignal($this.data('server-ip'), 'stop', function(d, timeout){
+            if(timeout) {
+                generate_alert("The server "+ $this.data('server-ip') +" did not respond", "danger");
+                return;
+            }
+            generate_alert(d.msg, 'success');
+
+            var status = $this.closest('div.icon').children('.status');
+            status.removeClass('running');
+            status.removeClass('unreachable');
+            status.addClass('stopped');
+        });
+        
+    });
+
+    $(window).bind('load', function(){
+        setTimeout(function(){getCronStatus();}, 500);
+        setInterval(getCronStatus, 90000); // refresh every 1.5 min
+    });
 });
 </script>
 @endif

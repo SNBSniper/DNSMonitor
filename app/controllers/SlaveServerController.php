@@ -28,7 +28,7 @@ class SlaveServerController extends BaseController {
         return Response::json(array(
             'error' => false,
             'msg' => 'crontab updated'
-        ));
+        ))->setCallback(Input::get('callback'));;
 	}
 
     /**
@@ -45,7 +45,7 @@ class SlaveServerController extends BaseController {
         return Response::json(array(
             'error' => false,
             'msg'   => 'Cron stopped successfully'
-        ));
+        ))->setCallback(Input::get('callback'));;
     }
 
     /**
@@ -61,7 +61,7 @@ class SlaveServerController extends BaseController {
         return Response::json(array(
             'error' => false,
             'msg'   => 'Cron started successfully'
-        ));
+        ))->setCallback(Input::get('callback'));;
     }
 
     /**
@@ -71,12 +71,13 @@ class SlaveServerController extends BaseController {
      */
     public function getCronStatus()
     {
-        $status = exec('crontab -l') == "" ? 'Cron is stopped' : 'Cron is running';
+        $status = exec('crontab -l') == "" ? 'stopped' : 'running';
 
         return Response::json(array(
-            'error' => false,
-            'msg'   => $status
-        ));
+            'error'  => false,
+            'msg'    => $status == 'stopped' ? 'Cron is stopped' : 'Cron is running',
+            'status' => $status
+        ))->setCallback(Input::get('callback'));;
     }
 
 }
