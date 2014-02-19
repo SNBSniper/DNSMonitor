@@ -37,9 +37,8 @@
              </div>
              <div class="panel-body panel-scroll">
                <ul class="list-unstyled">
-                 <li><i class="fa fa-times red"></i> UTFSM : 0.0.6.66</li>
                  @foreach ($dns_servers as $dns)
-                     <li><i class="fa fa-check green"></i> {{ $dns->provider }} : {{ $dns->ip }}</li>
+                     <li>{{ $dns->provider }} : {{ $dns->ip }}</li>
                  @endforeach    
                  </ul>
              </div>
