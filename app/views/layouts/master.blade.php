@@ -53,7 +53,7 @@
 
       <div class="navbar-right">
         @if (is_null($application_started))
-          <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn"><i class="fa fa-cog"></i> Initialize Server</a>
+          <a href="{{ url('/init') }}" class="btn btn-warning navbar-btn"><i class="fa fa-cog"></i> Initialize App</a>
         @endif
       </div>
 

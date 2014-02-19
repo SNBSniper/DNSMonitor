@@ -6,6 +6,28 @@ View::composer('*', function($view){
          ->with('application_started', Application::where('started', '=', 1)->first());
 });
 
+Route::get('landing', function(){
+    return View::make('landing')->with('ip', file_get_contents('http://phihag.de/ip/'));
+});
+
+Route::post('landing', function() {
+    $input = Input::only(array('ip', 'provider'));
+    $input['type'] = 'master';
+
+    $validation = Client::validate($input);
+
+    if ($validation->passes()) {
+        DB::transaction(function() use ($input){
+            $date = new \DateTime;
+            $client = new Client($input);
+            $client->save();
+        });
+
+        return Redirect::to('/')->with('success','Client Created Succesfully');
+    }
+    return Redirect::to('landing')->with('fail', $validation->messages);
+});
+
 Route::get('clientss',function(){
     $clients = Client::all();
     
@@ -87,7 +109,7 @@ Route::get('/', function() {
         return View::make('slave-home')->with(array('ips'=>$ips, 'clients'=>$clients_monitored));
     }
 
-    return App::abort(403, "This IP is not in our system");
+    return Redirect::to('landing');
 });
 
 Route::get('notifications', function(){
