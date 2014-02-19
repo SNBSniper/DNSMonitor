@@ -37,7 +37,8 @@ class MonitorCommand extends Command {
 	 */
 	public function fire()
 	{
-		$request = Request::create('monitor-mock', 'GET');
+		// $request = Request::create('monitor-mock', 'GET');
+		$request = Request::create('monitor', 'GET');
 		$response = Route::dispatch($request)->getContent();
 		$this->info($response);
 	}
