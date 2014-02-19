@@ -23,7 +23,6 @@ class SlaveServerController extends BaseController {
         file_put_contents(public_path().'/crontab.txt', "*/$rate * * * * ".Config::get('app.php_path')." ".base_path()."/artisan monitor > /dev/null 2>&1\n");
 
         Log::info("Crontab file updated to {$server->refresh_rate} min on server {$server->ip}");
-        $this->startCron();
 
         return Response::json(array(
             'error' => false,
