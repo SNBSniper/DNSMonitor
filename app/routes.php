@@ -14,16 +14,16 @@ Route::post('landing', function() {
     $input = Input::only(array('ip', 'provider'));
     $input['type'] = 'master';
 
-    $validation = Client::validate($input);
+    $validation = Server::validate($input);
 
     if ($validation->passes()) {
         DB::transaction(function() use ($input){
             $date = new \DateTime;
-            $client = new Client($input);
-            $client->save();
+            $server = new Server($input);
+            $server->save();
         });
 
-        return Redirect::to('/')->with('success','Client Created Succesfully');
+        return Redirect::to('/')->with('success','Server Created Succesfully');
     }
     return Redirect::to('landing')->with('fail', $validation->messages);
 });
