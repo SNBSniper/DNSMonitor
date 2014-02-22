@@ -372,7 +372,7 @@ Route::get('monitor', function(){
                             }
                         }
 
-                        $found = false; // simulate finding a new ip
+                        //$found = false; // simulate finding a new ip
 
                         if (!$found) { //if not found must notify master server WAY UNDER DEVELOPMENT
 
