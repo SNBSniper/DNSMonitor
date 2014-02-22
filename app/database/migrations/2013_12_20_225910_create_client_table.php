@@ -18,14 +18,20 @@ class CreateClientTable extends Migration {
 			$table->increments('id');
 			$table->string('name');
 			$table->string('hostname');
-			$table->integer('id_biller')->nullable();
-			$table->integer('id_servicio')->nullable();
-			$table->integer('version')->nullable();
-			$table->integer('pil')->nullable();
-			$table->integer('cod_tecnico')->nullable();
-			$table->string('service_name')->nullable();
-			$table->string('razon_social')->nullable();
-			$table->string('categoria')->nullable();
+			$table->string('id_canal_pago')->nullable();
+			$table->string('id_estado_canal')->nullable();
+			$table->string('id_biller')->nullable();
+			$table->string('id_servicio')->nullable();
+			$table->string('Cod_Pil')->nullable();
+			$table->string('codigo_tecnocaja')->nullable();
+			$table->string('nombre_servicio')->nullable();
+			$table->string('nombre_empresa')->nullable();
+			$table->string('nombre_fantasia')->nullable();
+			$table->string('rut')->nullable();
+			$table->string('dv_rut')->nullable();
+			$table->string('ctactebch')->nullable();
+			$table->string('ctactebci')->nullable();
+			$table->string('id_tipo_parametro_cp')->nullable();
 
 			$table->timestamps();
 		});

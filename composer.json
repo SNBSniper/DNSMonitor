@@ -10,7 +10,9 @@
 	},
 	"require-dev": {
 		"way/generators": "dev-master",
-		"darsain/laravel-console": "dev-master"
+		"darsain/laravel-console": "dev-master",
+		"maatwebsite/excel": "dev-master"
+
 	},
 	"minimum-stability" : "dev",
 	"autoload": {
@@ -20,7 +22,8 @@
 			"app/models",
 			"app/database/migrations",
 			"app/database/seeds",
-			"app/tests/TestCase.php"
+			"app/tests/TestCase.php",
+			"app/tests/PHPExcel.php"
 		]
 	},
 	"scripts": {

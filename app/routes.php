@@ -5,7 +5,74 @@ View::composer('*', function($view){
          ->with('master_server', Server::master())
          ->with('application_started', Application::where('started', '=', 1)->first());
 });
+Route::get('excel', function(){
+    $inputFileName = "/Users/danielftapiar/Sites/php/DNSMonitor/public/uploads/data.xlsx";
+    $rows= Excel::load($inputFileName, true)->toArray();
+    
+    foreach ($rows as $row) {
+        $client = Client::where('name','=',$row['nombre_empresa'])->first();
+        
+        $url_string = $row['valor_parametro_cp'];
+        $url_array = parse_url($url_string);
+        
+        if (!array_key_exists('host', $url_array)) {
+            $url_string = "http://".$url_string;
+        }
 
+        $url_array = parse_url($url_string);
+        $input = array();
+
+        $input['ip'] = $url_array['host'];
+        $validation = Ip::validate($input);
+        
+        if ($validation->passes()) {
+            echo "Client has ip instead of hostname, ignoring: ".$input['ip']."<br>";
+        }
+        else
+        {
+            
+            if(is_null($client)){
+
+                $client = new Client();
+                $client->name = $row['nombre_empresa'];
+                $client->hostname = "www.".$url_array['host'];
+                $client->id_canal_pago = $row['id_canal_pago'];
+                $client->id_estado_canal = $row['id_estado_canal'];
+                $client->id_biller = $row['id_biller'];
+                $client->id_servicio = $row['id_servicio'];
+                $client->Cod_Pil = $row['cod_pil'];
+                $client->codigo_tecnocaja = $row['codigo_tecnocaja'];
+                $client->nombre_servicio = $row['nombre_servicio'];
+                $client->nombre_empresa = $row['rut'];
+                $client->nombre_fantasia = $row['nombre_fantasia'];
+                $client->rut = $row['rut'];
+                $client->dv_rut = $row['dv_rut'];
+                $client->ctactebch = $row['ctactebch'];
+                $client->ctactebci = $row['ctactebci'];
+                $client->id_tipo_parametro_cp = $row['id_tipo_parametro_cp'];
+                $client->save();
+                $url = new Url(array('link'=>$row['valor_parametro_cp']));
+                $client->urls()->save($url);
+
+
+            }
+            else{
+
+                $url = new Url(array('link'=>$row['valor_parametro_cp']));
+                $client->urls()->save($url);
+                
+
+
+            }
+        }
+
+      
+
+        
+    }
+
+
+});
 Route::get('landing', function(){
     return View::make('landing')->with('ip', file_get_contents('http://phihag.de/ip/'));
 });
