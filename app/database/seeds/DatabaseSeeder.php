@@ -11,17 +11,19 @@ class DatabaseSeeder extends Seeder {
 	{
 		//Eloquent::unguard();
 
-		$this->call('ClientTableSeeder');
-		//$this->command->info('Client table seeded!');
+		// $this->call('ClientTableSeeder');
+		// //$this->command->info('Client table seeded!');
 
-		$this->call('UrlTableSeeder');
-		//$this->command->info('URL table seeded!');
+		// $this->call('UrlTableSeeder');
+		// //$this->command->info('URL table seeded!');
 
-		$this->call('ServerTableSeeder');
+		 $this->call('ServerTableSeeder');
 
-		$this->call('ServerUrlTableSeeder');
+		// $this->call('ServerUrlTableSeeder');
 		
-		$this->call('ClientServerTableSeeder');
+		// $this->call('ClientServerTableSeeder');
+
+
 
 	}
 
