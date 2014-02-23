@@ -16,14 +16,36 @@ class Server extends Eloquent{
 		return $this->belongsToMany('Client');
 	}
 
+	public function assignments(){
+		return $this->hasMany('Assignment');
+	}
+
 	/**
 	 * Scope Query to filter only the dns servers
 	 * 
 	 * @param  query $query the original query
 	 * @return query        the scoped query
 	 */
+
+	public function assignedDns()
+	{
+
+		$assignments = DB::table('assignments')->select('dns_server_id')->where('slave_server_id','=',1)->get();
+		$new_array = array();
+		foreach ($assignments as $assignment) {
+			
+			array_push($new_array, $assignment->dns_server_id);
+			
+		}
+
+		$dns_servers = Server::whereIn('id' , $new_array)->get();
+		
+		return $dns_servers;
+	}
+
 	public function scopeDns($query)
 	{
+
 		return $query->whereType('dns');
 	}
 

@@ -5,8 +5,11 @@ View::composer('*', function($view){
          ->with('master_server', Server::master())
          ->with('application_started', Application::where('started', '=', 1)->first());
 });
+
 Route::get('excel', function(){
-    $inputFileName = "/Users/danielftapiar/Sites/php/DNSMonitor/public/uploads/data.xlsx";
+    
+    $inputFileName = public_path()."/uploads/data.xlsx";
+
     $rows= Excel::load($inputFileName, true)->toArray();
     
     foreach ($rows as $row) {
@@ -243,7 +246,7 @@ Route::get('start',function(){
                 }
                 else // nslookup failed so we add status=0 to the client_server row to note that the server failed the lookup.
                 {
-                    DB::transaction(function() use ($client,$dns_server,$input)
+                    DB::transaction(function() use ($client,$dns_server)
                     {
                         $client->servers()->attach($dns_server->id, array('status'=>0));         
                     });
@@ -313,7 +316,8 @@ Route::get('monitor', function(){
         return Redirect::to('/')->with('fail', 'Slave has no clients assigned to monitor');
     }
 
-    $dns_servers = Server::where('type','=','dns')->get();
+    //$dns_servers = Server::where('type','=','dns')->get();
+    $dns_servers = $slave_server->assignedDns();
 
     if (is_null($dns_servers)) {
         return Redirect::to('/')->with('fail', 'No DNS Servers Found');
