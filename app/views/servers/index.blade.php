@@ -166,13 +166,13 @@ $(document).ready(function(){
                 type: "GET",
                 url: "//" + $this.data('server-ip') + "/api/v2/cron/status",
                 crossDomain: true,
-                contentType: "application/javascript",
-                dataType: 'jsonp',
+                dataType: "jsonp",
+                contentType: "application/json",
                 timeout: 5000,
                 success: function(data) {
                     $this.removeClass('stopped');
                     $this.removeClass('running');
-                    $this.addClass(data.status)
+                    $this.addClass(data.status);
                 },
                 error: function(request, status, error) {
                     $this.addClass('unreachable');
@@ -188,6 +188,7 @@ $(document).ready(function(){
             crossDomain: true,
             contentType: "application/javascript",
             dataType: 'jsonp',
+            jsonpCallback: 'callback',
             timeout: 5000,
             success: function(data) {
                 callback(data, false);

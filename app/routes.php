@@ -35,7 +35,7 @@ Route::get('excel', function(){
 
                 $client = new Client();
                 $client->name = $row['nombre_empresa'];
-                $client->hostname = "www.".$url_array['host'];
+                $client->hostname = $url_array['host'];
                 $client->id_canal_pago = $row['id_canal_pago'];
                 $client->id_estado_canal = $row['id_estado_canal'];
                 $client->id_biller = $row['id_biller'];
@@ -176,8 +176,6 @@ Route::get('notifications', function(){
 Route::get('start',function(){
     ini_set('max_execution_time', 300);
 
-    
-
     $dns_servers = Server::dns()->get();
 
     $clients_monitored = Client::all();
@@ -281,33 +279,27 @@ Route::get('init', function(){
                                ->with('is_master', $is_master);
 });
 
-Route::get('monitor', function(){
+Route::get('monitor', function() {
     
     ini_set('max_execution_time', 0);
     Log::info('The server started monitoring');
 
-    // $local_ip = gethostbyname($_SERVER['SERVER_ADDR']);
-    
-    // $slave_server = Server::where('ip','=',$local_ip)->first();
     $slave_server = Server::current();
 
-    if (is_null($slave_server)) {
+    if (is_null($slave_server))
         return Redirect::to('/')->with('fail', 'Slave Server was not found');
-    }
-    //$clients_monitored = get_server_clients($slave_server); UNCOMMENT
-    $clients_monitored = Client::all();
+
+    $clients_monitored = $slave_server->clients;
 
     if (is_null($clients_monitored)) {
         return Redirect::to('/')->with('fail', 'Slave has no clients assigned to monitor');
     }
 
     //$dns_servers = Server::where('type','=','dns')->get();
-    $dns_servers = $slave_server->assignedDns();
+    $dns_servers = $slave_server->assignedDns;
 
-    if (is_null($dns_servers)) {
+    if (is_null($dns_servers))
         return Redirect::to('/')->with('fail', 'No DNS Servers Found');
-
-    }
 
     foreach ($clients_monitored as $client) {
         foreach ($dns_servers as $dns_server) {
@@ -323,14 +315,13 @@ Route::get('monitor', function(){
             {
                 $input =  array( 'ip' => $matches[1]);
                 
-                
                 $validation = Ip::validate($input);
                 
                 if ($validation->passes()) { //validation passes then insert it
                     
                     //get the current server that is monitoring a specific client
-                    $client_server = Client_server::where('server_id','=',$slave_server->id)->where('client_id','=',$client->id)->first();
-                    
+                    $client_server = Client_server::where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
+
                     if (is_null($client_server)) {
                         //client_server doesn't exist, so we add the new server to the client
 
@@ -339,8 +330,8 @@ Route::get('monitor', function(){
                         {
                             $date = new \DateTime;
 
-                            $client->servers()->attach($slave_server->id, array('status'=>1,'created_at'=>$date, 'updated_at'=>$date));         
-                            $client_server = DB::table('client_server')->where('server_id','=',$slave_server->id)->where('client_id','=',$client->id)->first();
+                            $client->servers()->attach($dns_server->id, array('status'=>1,'created_at'=>$date, 'updated_at'=>$date));         
+                            $client_server = DB::table('client_server')->where('server_id','=',$dns_server->id)->where('client_id','=',$client->id)->first();
 
                             $date = new \DateTime;
                             $ip = new Ip(array('ip'=>$input['ip'], 'client_id'=>$client->id,'client_server_id'=>$client_server->id));
@@ -358,13 +349,14 @@ Route::get('monitor', function(){
                             
                             if ($ip->ip == $input['ip']) {
                                 $found = true;
+                                break;
                             }
                         }
 
                         //$found = false; // simulate finding a new ip
 
                         if (!$found) { //if not found must notify master server WAY UNDER DEVELOPMENT
-
+                            
                             $master_server = Server::master();
 
                                $response = Server::master()->notify($slave_server->id, $client->id, $input['ip']);

@@ -80,7 +80,7 @@ class SlaveServerController extends BaseController {
             'error'  => false,
             'msg'    => $status == 'stopped' ? 'Cron is stopped' : 'Cron is running',
             'status' => $status
-        ))->setCallback(Input::get('callback'));;
+        ))->setCallback(Input::get('callback'));
     }
 
 }
