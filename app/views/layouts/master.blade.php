@@ -6,7 +6,7 @@
     <!-- Bootstrap -->
 
     @section('css')
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    {{ HTML::style('css/bootstrap.min.css') }}
     {{ HTML::style('packages/font-awesome/css/font-awesome.min.css') }}
     {{ HTML::style('style.css') }}
     <link rel="shortcut icon" href="favicon.ico" />
@@ -37,7 +37,7 @@
       <ul class="nav navbar-nav">
         <li><a href="{{ url('/') }}"><i class="fa fa-home"></i> Home</a></li>
         <li><a href="{{ url('/servers') }}"><i class="fa fa-cloud"></i> Servidores</a></li>
-        <li><a href="{{ url('clientss') }}"><i class="fa fa-user"></i> Clients</a></li>
+        <li><a href="{{ url('clients') }}"><i class="fa fa-user"></i> Clients</a></li>
         <li><a href="{{ url('/notifications') }}"><i class="fa fa-bell-o"></i> Notifications</a></li>
       </ul>
 

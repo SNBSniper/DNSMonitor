@@ -13,7 +13,8 @@
 
 App::before(function($request)
 {
-	//
+    if ( ! Server::current() && Request::segment(1) !== 'landing')
+    	return Redirect::to('landing');
 });
 
 

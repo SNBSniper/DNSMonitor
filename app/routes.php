@@ -30,10 +30,7 @@ Route::get('excel', function(){
         
         if ($validation->passes()) {
             echo "Client has ip instead of hostname, ignoring: ".$input['ip']."<br>";
-        }
-        else
-        {
-            
+        }else {
             if(is_null($client)){
 
                 $client = new Client();
@@ -56,32 +53,21 @@ Route::get('excel', function(){
                 $client->save();
                 $url = new Url(array('link'=>$row['valor_parametro_cp']));
                 $client->urls()->save($url);
-
-
-            }
-            else{
-
+            }else {
                 $url = new Url(array('link'=>$row['valor_parametro_cp']));
                 $client->urls()->save($url);
-                
-
-
             }
-        }
-
-      
-
-        
+        }   
     }
-
-
 });
+
 Route::get('landing', function(){
+
     return View::make('landing')->with('ip', file_get_contents('http://phihag.de/ip/'));
 });
 
 Route::post('landing', function() {
-    $input = Input::only(array('ip', 'provider'));
+    $input = Input::only('ip', 'provider');
     $input['type'] = 'master';
 
     $validation = Server::validate($input);
@@ -99,15 +85,15 @@ Route::post('landing', function() {
     return Redirect::to('landing')->with('fail', $validation->messages);
 });
 
-Route::get('clientss',function(){
+Route::get('clients',function(){
     $clients = Client::all();
     
-    return View::make('clients')
+    return View::make('clients.index')
         ->with('clients',$clients);
 });
 
-Route::post('create-client', function(){
-    $input = Input::all();
+Route::post('clients/create', function(){
+    $input = Input::only('name', 'hostname');
     $validation = Client::validate($input);
 
     if ($validation->passes()) {
@@ -117,32 +103,32 @@ Route::post('create-client', function(){
             $client->save();
         });
 
-        return Redirect::to('create-client')->with('success','Client Created Succesfully');
+        return Redirect::to('clients/create')->with('success','Client Created Succesfully');
     }
-    return Redirect::to('create-client')->with('fail', $validation->messages);
+    return Redirect::to('clients/create')->with('fail', $validation->messages);
 });
 
-Route::get('create-client', function(){
+Route::get('clients/create', function(){
 
-    return View::make('create_client');
+    return View::make('clients.create');
 });
 
 Route::get('servers',function(){
     $servers = Server::slave()->get();
     
-    return View::make('servers')
+    return View::make('servers.index')
         ->with('servers',$servers)
         ->with('clients', Client::all())
         ->with('current_server', Server::current());
 });
 
-Route::get('create-server', function() {
+Route::get('servers/create', function() {
     $ip = Config::get('app.ip');
-    return View::make('create_server')->with('ip', $ip);
+    return View::make('servers.create')->with('ip', $ip);
 });
 
-Route::post('init-server', function(){
-    $input = Input::all();
+Route::post('servers/create', function(){
+    $input = Input::only('ip', 'provider', 'type');
     $validation = Server::validate($input);
     
     if ($validation->passes()) {
@@ -150,16 +136,15 @@ Route::post('init-server', function(){
         {
             $date = new \DateTime;
             $server = new Server($input);
-            $server->port=80;
-            $server->refresh_rate=15;
+            $server->port = 80;
+            $server->refresh_rate = 15;
             $server->save();
-            
         });
 
-        return Redirect::to('create-server')->with('success','Server Created Succesfully');
+        return Redirect::to('servers/create')->with('success','Server Created Succesfully');
     }
     else
-        return Redirect::to('create-server')->with('fail', $validation->messages);
+        return Redirect::to('servers/create')->with('fail', $validation->messages);
 });
 
 Route::get('/', function() {
@@ -449,8 +434,8 @@ Route::get('monitor-mock', function(){
     Log::info('The server finished monitoring');
 
         // Case where new IP is detected
-        $client_id       = mt_rand(1,3);
-        $slave_server_id = mt_rand(1,3);
+        $client_id       = mt_rand(1,2);
+        $slave_server_id = 2;
         $new_ip          = random_ip();
         
         // Send Notification to master server

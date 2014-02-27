@@ -16,8 +16,13 @@ class Server extends Eloquent{
 		return $this->belongsToMany('Client');
 	}
 
-	public function assignments(){
-		return $this->hasMany('Assignment');
+	public function assignedDns(){
+		return $this->belongsToMany('Server', 'assignments', 'slave_server_id', 'dns_server_id');
+	}
+
+	public function assignedSlaveServers()
+	{
+		return $this->belongsToMany('Server', 'assignments', 'dns_server_id', 'slave_server_id');
 	}
 
 	/**
@@ -27,21 +32,21 @@ class Server extends Eloquent{
 	 * @return query        the scoped query
 	 */
 
-	public function assignedDns()
-	{
+	// public function assignedDns()
+	// {
 
-		$assignments = DB::table('assignments')->select('dns_server_id')->where('slave_server_id','=',1)->get();
-		$new_array = array();
-		foreach ($assignments as $assignment) {
+	// 	$assignments = DB::table('assignments')->select('dns_server_id')->where('slave_server_id','=',1)->get();
+	// 	$new_array = array();
+	// 	foreach ($assignments as $assignment) {
 			
-			array_push($new_array, $assignment->dns_server_id);
+	// 		array_push($new_array, $assignment->dns_server_id);
 			
-		}
+	// 	}
 
-		$dns_servers = Server::whereIn('id' , $new_array)->get();
+	// 	$dns_servers = Server::whereIn('id' , $new_array)->get();
 		
-		return $dns_servers;
-	}
+	// 	return $dns_servers;
+	// }
 
 	public function scopeDns($query)
 	{

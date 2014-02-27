@@ -17,6 +17,7 @@ return array(
 	'ip' => file_get_contents('http://phihag.de/ip/'),   // For Development when using public IP (http://stackoverflow.com/questions/7909362/how-do-i-get-the-external-ip-of-my-server-using-php)
 
 	'php_path' => '/usr/local/bin/php',
+	'mail_to'  => 'mon.servipag@idichile.com',
 
 	/*
 	|--------------------------------------------------------------------------
