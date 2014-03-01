@@ -9,6 +9,7 @@
 		"jyggen/curl": "3.0.1"
 	},
 	"require-dev": {
+		"phpunit/phpunit": "3.7.*",
 		"way/generators": "dev-master",
 		"darsain/laravel-console": "dev-master",
 		"maatwebsite/excel": "dev-master"

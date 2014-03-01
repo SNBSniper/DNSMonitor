@@ -83,4 +83,16 @@ class SlaveServerController extends BaseController {
         ))->setCallback(Input::get('callback'));
     }
 
+    public function monitor()
+    {
+        Log::info('The server started monitoring');
+        
+        $current = Server::current();
+        $response = $current->monitor();
+
+        Log::info('The server finished monitoring');
+
+        return $response;
+    }
+
 }

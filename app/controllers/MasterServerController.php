@@ -40,7 +40,7 @@ class MasterServerController extends BaseController {
         $client_id = Input::get('client_id');
         $status    = Input::get('status', 1);
 
-        $server = Server::find($server_id);
+        $server = SlaveServer::find($server_id);
 
         $server->clients()->attach($client_id, array('status' => $status));
 
@@ -55,7 +55,7 @@ class MasterServerController extends BaseController {
         $server_id = Input::get('server_id');
         $client_id = Input::get('client_id');
 
-        $server = Server::find($server_id);
+        $server = SlaveServer::find($server_id);
 
         $server->clients()->detach($client_id);
 
@@ -67,14 +67,14 @@ class MasterServerController extends BaseController {
 
     public function addNotification()
     {
-        $client       = Server::find(Input::get('client_id'));
-        $slave_server = Server::find(Input::get('slave_server_id'));
+        $client       = Client::find(Input::get('client_id'));
+        $slaveServer  = SlaveServer::find(Input::get('slave_server_id'));
         $new_ip       = Input::get('new_ip');
 
         $notification_status = 0;
 
-        if ( ! is_null($slave_server) && ! is_null($new_ip) && ! is_null($client)) {
-            DB::transaction(function() use ($slave_server, $client, $new_ip, &$notification_status)
+        if ( ! is_null($slaveServer) && ! is_null($new_ip) && ! is_null($client)) {
+            DB::transaction(function() use ($slaveServer, $client, $new_ip, &$notification_status)
             {
                 $notification = Notification::where('new_ip', '=', $new_ip)->first();
                 
@@ -82,25 +82,23 @@ class MasterServerController extends BaseController {
                     // Create the new notification
                     $notification = new Notification(array(
                         'new_ip'     => $new_ip,
-                        'client_id'  => $client->id,
-                        'created_at' => new DateTime,
-                        'updated_at' => new DateTime
+                        'client_id'  => $client->id
                     ));
                     $notification->save();
                     
-                    $notification->notification_server()->attach($slave_server->id);
+                    $notification->notification_server()->attach($slaveServer->id);
                     $notification_status = 1;
                     Event::fire('notification.new.email', array($client->id));
                 }else {
                     // Append the notification only. 
-                    $already_notified = DB::table('notification_server')->where('server_id','=',$slave_server->id)->where('notification_id','=',$notification->id)->first();
+                    $already_notified = DB::table('notification_server')->where('server_id','=',$slaveServer->id)->where('notification_id','=',$notification->id)->first();
                    
                     if (is_null($already_notified)) {
-                        $notification->notification_server()->attach($slave_server->id);
+                        $notification->notification_server()->attach($slaveServer->id);
                         $notification_status = 3;
                         Event::fire('notification.new.email', array($client->id));
                     }else {
-                        $notifications_status = 2;
+                        $notification_status = 2;
                     }
                 }
             });

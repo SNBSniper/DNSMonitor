@@ -16,7 +16,17 @@ class Client extends Eloquent{
 
 	public function servers()
 	{
-		return $this->belongsToMany('Server');
+		return $this->belongsToMany('Server')->withTimestamps();
+	}
+
+	public function dnsServers()
+	{
+		return $this->belongsToMany('DnsServer', 'client_server', 'client_id', 'server_id')->withTimestamps();
+	}
+
+	public function slaveServers()
+	{
+		return $this->belongsToMany('SlaveServer', 'client_server', 'client_id', 'server_id')->withTimestamps();
 	}
 
 	public static function validate($input)

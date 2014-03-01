@@ -16,6 +16,12 @@
                     Found by: {{ $server->provider }} <sup>{{ $server->id }}</sup> § {{ $server->ip }} <br>
                 @endforeach
             </p>
+            <p>
+                <h4>The old IP(s) for this client was/where:</h4>
+                @foreach ($notification->client->ips as $ip)
+                    {{ $ip->ip }}<br>
+                @endforeach
+            </p>
             {{ HTML::link('notifications', 'View all notifications') }}
         </div>
     </body>
