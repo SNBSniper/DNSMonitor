@@ -3,6 +3,7 @@
 View::composer('*', function($view){
     $view->with('current_server', Server::current())
          ->with('master_server', MasterServer::first())
+         ->with('menu_notifications', Notification::with('client')->take(5)->get())
          ->with('application_started', Application::where('started', '=', 1)->first());
 });
 
@@ -89,7 +90,8 @@ Route::get('clients',function(){
     $clients = Client::all();
     
     return View::make('clients.index')
-        ->with('clients',$clients);
+        ->with('clients',$clients)
+        ->with('active', 'clients');
 });
 
 Route::post('clients/create', function(){
@@ -110,7 +112,7 @@ Route::post('clients/create', function(){
 
 Route::get('clients/create', function(){
 
-    return View::make('clients.create');
+    return View::make('clients.create')->with('active', 'clients');
 });
 
 Route::get('servers',function(){
@@ -119,12 +121,13 @@ Route::get('servers',function(){
     return View::make('servers.index')
         ->with('servers',$servers)
         ->with('dnsServers', DnsServer::all())
-        ->with('clients', Client::all());
+        ->with('clients', Client::all())
+        ->with('active', 'servers');
 });
 
 Route::get('servers/create', function() {
     $ip = Config::get('app.ip');
-    return View::make('servers.create')->with('ip', $ip);
+    return View::make('servers.create')->with('ip', $ip)->with('active', 'servers');
 });
 
 Route::post('servers/create', function(){
@@ -170,7 +173,8 @@ Route::get('/', function() {
 
 Route::get('notifications', function(){
     return View::make('notificationss')
-        ->with('notifications', Notification::with(array('notification_server'))->orderBy('id', 'DESC')->paginate(20));
+        ->with('notifications', Notification::with(array('notification_server'))->orderBy('id', 'DESC')->paginate(20))
+        ->with('active', 'notifications');
 });
 
 Route::get('start',function(){

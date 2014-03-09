@@ -1,7 +1,7 @@
-.slide-panel { position: fixed; top: 168px; left: -280px; width: 280px; z-index: 2; }
-.slide-panel-toggle { position: absolute; left: 235px; top: 44px; -webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg); }
+.slide-panel { position: fixed; top: 168px; right: -280px; width: 280px; z-index: 2; }
+.slide-panel-toggle { position: absolute; right: 235px; top: 44px; -webkit-transform: rotate(-90deg); -moz-transform: rotate(-90deg); -ms-transform: rotate(-90deg); -o-transform: rotate(-90deg); transform: rotate(-90deg); }
 .slide-panel-content { background: #f3f3f3; border: 1px solid #e0e0e0; padding: 20px; text-align: center; min-height: 150px; max-height: 400px; overflow: scroll; }
-.slide-panel-hover { left: 0; }
+.slide-panel-hover { right: 0; }
 .slide-panel ul { cursor: move; }
 .server-dnsServers { padding: 6px; min-height: 30px; margin-bottom: 10px; }
 .slide-panel .input-group { margin-bottom: 15px !important;}

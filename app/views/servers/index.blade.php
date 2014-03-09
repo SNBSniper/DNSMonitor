@@ -3,9 +3,6 @@
 @section('content')
 
 <div class="row">
-    @if ($current_server->type == 'master')
-        {{HTML::link('servers/create', 'Create Server', array('class'=>'btn btn-primary'))}}
-    @endif
     <h1 class="page-header">Servers </h1> 
 
     <div id="alert-box"></div>
@@ -15,16 +12,16 @@
             <div class="icon">
                 <div class="image status waiting" data-server-ip="{{ $server->ip }}"><i class="fa fa-desktop"></i></div>
                 <div class="info">
-                    <h3 class="title">{{$server->ip}}<br><small>{{ ucwords($server->type) }}</small></h3>
-                    <h6>{{ $server->provider }}</h6>
+                    <h3 class="title">
+                        <a href="//{{ $server->ip }}" target="_blank">{{$server->ip}}<br><small>{{ ucwords($server->provider) }}</small></a>
+                    </h3>
+                    <h6>{{ $server->type }}</h6>
                     
                     <p data-toggle="tooltip" data-placement="top" title="How often the server monitors DNS changes" class="tooltipp">
                         Refresh Rate: <span id="refresh-rate-{{ $server->id }}">{{ $server->refresh_rate }}</span> min
                     </p>
-
                     
-                    
-                    <ul class="nav nav-pills nav-justified">
+                    <ul class="nav nav-tabs nav-justified">
                         <li class="active"><a href="#clients-{{ $server->id }}" data-toggle="tab">Clients</a></li>
                         <li><a href="#dnsServers-{{ $server->id }}" data-toggle="tab">Dns Servers</a></li>
                     </ul>
@@ -83,7 +80,7 @@
 @if ($current_server->type == 'master')
 
 <div class="slide-panel" style="top: 80px; z-index: 3;">
-    <a href="#" class="slide-panel-toggle btn btn-default" style="left: 254px; top: 27px;"><i class="fa fa-user"></i> Clients</a>
+    <a href="#" class="slide-panel-toggle btn btn-default" style="right: 254px; top: 27px;"><i class="fa fa-user"></i> Clients</a>
     <div class="slide-panel-content">
         <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-search"></i></span>

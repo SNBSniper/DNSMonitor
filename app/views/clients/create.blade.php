@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('content')
-	<h1 class="page-header"><i class="fa fa-desktop"></i>  Add New Client</h1>
+	<h1 class="page-header"><i class="fa fa-desktop"></i>  Create Client</h1>
 @if (Session::has('success'))
   <div class="alert alert-success">{{Session::get('success')}}</div>
 
@@ -11,7 +11,7 @@
   <div class="alert alert-danger">{{Session::get('fail')}}</div>  
 @endif
 <div class="row">
-	<div class="col-sm-6">
+	<div class="col-sm-12">
 		<div class="panel-group" id="accordion">
 		  <div class="panel panel-default">
 		    <div class="panel-heading">

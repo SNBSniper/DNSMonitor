@@ -2,7 +2,7 @@
 
 @section('content')
 
-<h1 class="page-header"><i class="fa fa-desktop"></i>  Server Set Up Configuration</h1>
+<h1 class="page-header"><i class="fa fa-desktop"></i>  Create Server</h1>
 @if (Session::has('success'))
   <div class="alert alert-success">{{Session::get('success')}}</div>
 
