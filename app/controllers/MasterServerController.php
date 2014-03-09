@@ -65,6 +65,36 @@ class MasterServerController extends BaseController {
         ));
     }
 
+    public function addDnsServerToServer()
+    {
+        $server_id    = Input::get('server_id');
+        $dnsServer_id = Input::get('dnsserver_id');
+
+        $server = SlaveServer::find($server_id);
+
+        $server->assignedDns()->attach($dnsServer_id);
+
+        return Response::json(array(
+            'error' => false,
+            'msg'   => "$dnsServer_id assigned to $server_id"
+        ));
+    }
+
+    public function removeDnsServerFromServer()
+    {
+        $server_id = Input::get('server_id');
+        $dnsServer_id = Input::get('dnsserver_id');
+
+        $server = SlaveServer::find($server_id);
+
+        $server->assignedDns()->detach($dnsServer_id);
+
+        return Response::json(array(
+            'error' => false,
+            'msg'   => "$dnsServer_id unassigned from $server_id"
+        ));
+    }
+
     public function addNotification()
     {
         $client       = Client::find(Input::get('client_id'));

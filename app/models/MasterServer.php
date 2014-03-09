@@ -34,6 +34,7 @@ class MasterServer extends Eloquent{
 			return -1; // The request was not done
 
 		$response = json_decode($response[0]->getContent());
+		var_dump($response);
 		return $response->status;
 	}
 

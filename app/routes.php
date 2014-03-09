@@ -118,6 +118,7 @@ Route::get('servers',function(){
     
     return View::make('servers.index')
         ->with('servers',$servers)
+        ->with('dnsServers', DnsServer::all())
         ->with('clients', Client::all());
 });
 
@@ -260,7 +261,7 @@ Route::get('init', function(){
 
     return View::make('init_1')->with('success', 'Server May be Initialized' )
                                ->with('slave_servers', $slave_servers)
-                               ->with('is_master', $is_master);
+                               ->with('is_master', Server::current()->type == "master");
 });
 
 Route::get('monitor', function() {
@@ -434,6 +435,8 @@ Route::group(array('prefix' => 'api/v1'), function() {
     Route::post('notify', 'MasterServerController@addNotification');
     Route::post('clients', 'MasterServerController@addClientToServer');
     Route::delete('clients', 'MasterServerController@removeClientFromServer');
+    Route::delete('clients/dns-servers', 'MasterServerController@removeDnsServerFromServer');
+    Route::post('clients/dns-servers', 'MasterServerController@addDnsServerToServer');
 });
 
 /**
