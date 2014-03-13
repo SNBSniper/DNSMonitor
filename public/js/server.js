@@ -1,13 +1,15 @@
 $(document).ready(function(){
 
-     var getCronStatus = function(){
+    var getCronStatus = function(){
         $('div.status').each(function(){
             var $this = $(this);
+            var mycallback = 'c'+Math.floor((Math.random()*100000000)+1);
             $.ajax({
                 type: "GET",
                 url: "//" + $this.data('server-ip') + "/api/v2/cron/status",
                 crossDomain: true,
                 dataType: "jsonp",
+                jsonpCallback: mycallback,
                 contentType: "application/json",
                 timeout: 5000,
                 success: function(data) {

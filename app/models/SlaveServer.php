@@ -4,18 +4,18 @@ class SlaveServer extends Eloquent{
 
     protected $guarded = array();
 
-	protected $table = 'servers';
+    protected $table = 'servers';
 
     protected $attributes = array(
         'type' => 'slave'
     );
 
-	public function newQuery($excludeDeleted = true)
-	{
-		$query = parent::newQuery();
-		$query->whereType('slave');
-		return $query;
-	}
+    public function newQuery($excludeDeleted = true)
+    {
+        $query = parent::newQuery();
+        $query->whereType('slave');
+        return $query;
+    }
 
     public function clients()
     {
@@ -68,23 +68,23 @@ class SlaveServer extends Eloquent{
                             // Review the response given by the server
                             if ($response == -1) {
                                 Log::error("The master server couldn't be notified");
-                                return Response::json(array('error' => true, 'msg' => "The master server couldn't be notified"));
+                                // return Response::json(array('error' => true, 'msg' => "The master server couldn't be notified"));
                             }else if ($response == 0) {
                                 Log::error("One or more required parameters (slave_server_id, client_id or new_ip) was missing or illegal");
-                                return Response::json(array('error' => true, 'msg' => "One or more required parameters (slave_server_id, client_id or new_ip) was missing or illegal"));
+                                // return Response::json(array('error' => true, 'msg' => "One or more required parameters (slave_server_id, client_id or new_ip) was missing or illegal"));
                             }else if ($response == 2) {
                                 Log::error("The notification was already sent by this server");
-                                return Response::json(array('error' => true, 'msg' => "The notification was already sent by this server"));
+                                // return Response::json(array('error' => true, 'msg' => "The notification was already sent by this server"));
                             }else if ($response == 3) {
                                 Log::info("Notification already sent by pair slave server. Master server notified again");
-                                return Response::json(array('error' => false, 'msg' => "Notification already sent by pair slave server. Master server notified again"));
+                                // return Response::json(array('error' => false, 'msg' => "Notification already sent by pair slave server. Master server notified again"));
                             }else if ($response == 1) {
                                 Log::info("The notification was sent successfully to the master server");
-                                return Response::json(array('error' => false, 'msg' => "The notification was sent successfully to the master server"));
+                                // return Response::json(array('error' => false, 'msg' => "The notification was sent successfully to the master server"));
                             }
                         }else {
                             Log::info("The ip is already on our records");
-                            return Response::json(array('error' => true, 'msg' => 'No changes found by this server'));
+                            // return Response::json(array('error' => true, 'msg' => 'No changes found by this server'));
                         }
                     }
                 }else {
@@ -98,6 +98,7 @@ class SlaveServer extends Eloquent{
                 }
             } // End foreach dnsServers
         } // End foreach clients
+        Response::json(array('error' => false, 'msg' => "Slave server monitor algorithm finished"));
     }
 
     public static function nslookup($hostName = "www.google.com", $dnsServer = "8.8.8.8")
